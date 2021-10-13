@@ -45,23 +45,23 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             {
                 var entity = parser.NewRootEntity();
-                //entity.Name = "The";
-                entity.AddAlternative(parser.Entity("'T' letter"));
-                entity.NewNextEntity(parser.Entity("'H' letter"));
-                entity.NextEntity.NewNextEntity(parser.Entity("'E' letter"));
+                entity.Name = "The";
+                entity.Head.Entity = parser.Entity("'T' letter");
+                entity.Head.NewNextEntity(parser.Entity("'H' letter"));
+                entity.Head.Next.NewNextEntity(parser.Entity("'E' letter"));
+                entity.Head.Next.Next.MinQuantity = 1;
+                entity.Head.Next.Next.MaxQuantity = 3;
             }
 
             foreach (var entity in parser.Entities) {
-                Console.WriteLine(entity);  // + " -> " + entity.Describe());
+                //Console.WriteLine(entity);  // + " -> " + entity.Describe());
             }
 
-            /*
             foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
                 string paragraphText = rawParagraph.Replace("\r\n", " ");
                 parser.Parse(paragraphText);
                 break;
             }
-            */
 
             Console.WriteLine("Done");
             Console.ReadLine();

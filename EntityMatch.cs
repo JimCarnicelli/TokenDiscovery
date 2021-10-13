@@ -10,7 +10,7 @@ namespace TokenDiscovery {
         public int StartAt;
         public int Length;
         public Entity Entity;
-        public List<EntityMatch> NextMatches = new();
+        public List<EntityMatch> Nexts;
     }
 
 }
