@@ -43,7 +43,7 @@ namespace TokenDiscovery {
                 if (match == null) return null;
                 match.Entity = this;
             } else {
-                if (startAt + Literal.Length >= text.Length) return null;
+                if (startAt + Literal.Length > text.Length) return null;
                 if (text.Substring(startAt, Literal.Length) != Literal) return null;
                 match = new EntityMatch();
                 match.Entity = this;
@@ -51,10 +51,10 @@ namespace TokenDiscovery {
                 match.Length = Literal.Length;
             }
 
-            Console.WriteLine("> " + text.Substring(startAt, match.Length) + "  |  " + match.Entity);
-
+            /*
             var nexts = Parser.Parse(text, startAt + match.Length, depth + 1);
             if (nexts.Count > 0) match.Nexts = nexts;
+            */
             return match;
         }
 

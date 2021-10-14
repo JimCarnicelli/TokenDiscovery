@@ -15,8 +15,6 @@ namespace TokenDiscovery {
 
         public Entity Entity;
 
-        public EntityPart Next;
-
         /// <summary>
         /// Like a regular expression, describes the rules a string of other entities must follow to be considered a match
         /// </summary>
@@ -27,6 +25,8 @@ namespace TokenDiscovery {
         public int MaxQuantity = 1;
 
         public bool Greedy = true;
+
+        public EntityPart Next;
 
         public EntityPart(Parser parser) {
             Parser = parser;
@@ -95,7 +95,16 @@ namespace TokenDiscovery {
         }
 
         public EntityMatch Match(string text, int startAt, int depth) {
-            EntityMatch entityMatch = null;
+            EntityMatch match = null;
+            if (Entity != null) {
+                match = Entity.Match(text, startAt, depth);
+                if (match != null) return match;
+            } else {
+                foreach (var Alt in Alternatives) {
+                    match = Alt.Match(text, startAt, depth + 1);
+                    if (match != null) return match;
+                }
+            }
             /*
             if (Literal != null) {
                 if (startAt + Literal.Length >= text.Length) return null;  // Couldn't possibly match
@@ -112,7 +121,7 @@ namespace TokenDiscovery {
                 Parser.Parse(text, startAt + entityMatch.Length, depth + 1);
             }
             */
-            return entityMatch;
+            return match;
         }
 
     }

@@ -4,7 +4,7 @@ namespace TokenDiscovery {
     class Program {
 
         static string sourceText = @"
-(CNN)Eating too much salt can kill you. Excessive salt intake will cause an 
+Eating too much salt can kill you. Excessive salt intake will cause an 
 estimated 1.6 million deaths worldwide this year. Four out of five of these 
 deaths will occur in low- and middle-income countries, and nearly half will 
 be among people younger than 70.
@@ -45,12 +45,10 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             {
                 var entity = parser.NewRootEntity();
-                entity.Name = "The";
-                entity.Head.Entity = parser.Entity("'T' letter");
-                entity.Head.NewNextEntity(parser.Entity("'H' letter"));
-                entity.Head.Next.NewNextEntity(parser.Entity("'E' letter"));
-                entity.Head.Next.Next.MinQuantity = 1;
-                entity.Head.Next.Next.MaxQuantity = 3;
+                entity.Name = "Eat";
+                entity.Head.Entity = parser.Entity("E or e");
+                entity.Head.NewNextEntity(parser.Entity("A or a"));
+                entity.Head.Next.NewNextEntity(parser.Entity("T or t"));
             }
 
             foreach (var entity in parser.Entities) {
@@ -59,7 +57,14 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
                 string paragraphText = rawParagraph.Replace("\r\n", " ");
-                parser.Parse(paragraphText);
+                while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
+                while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
+                var matches = parser.Parse(paragraphText);
+
+                foreach (var match in matches) {
+                    Console.WriteLine("> " + rawParagraph.Substring(match.StartAt, match.Length) + "  |  " + match.Entity);
+                }
+
                 break;
             }
 

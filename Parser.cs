@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TokenDiscovery {
     
@@ -23,7 +19,7 @@ namespace TokenDiscovery {
             foreach (var entity in Entities) {
                 if (entity.Name == name) return entity;
             }
-            return null;
+            throw new KeyNotFoundException(name);
         }
 
         public Parser() {
@@ -43,10 +39,11 @@ namespace TokenDiscovery {
 
             // Generate an entity for all letters with both upper and lower case versions of each
             for (char c = 'A'; c <= 'Z'; c++) {
+                string lowerC = c.ToString().ToLower();
                 var entity = NewRootEntity();
-                entity.Name = "'" + c + "' letter";
-                entity.Head.AddAlternative(Entity("'" + c + "' character"));
-                entity.Head.AddAlternative(Entity("'" + c.ToString().ToLower() + "' character"));
+                entity.Name = c + " or " + lowerC;
+                entity.Head.AddAlternative(Entity("'" + c + "'"));
+                entity.Head.AddAlternative(Entity("'" + lowerC + "'"));
             }
 
         }
