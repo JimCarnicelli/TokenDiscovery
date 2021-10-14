@@ -36,10 +36,10 @@ namespace TokenDiscovery {
             return "( " + Head.Describe(0) + " )";
         }
 
-        public EntityMatch Match(string text, int startAt, int depth) {
+        public EntityMatch Match(string text, int startAt) {
             EntityMatch match;
             if (Literal == null) {
-                match = Head.Match(text, startAt, depth);
+                match = Head.Match(text, startAt);
                 if (match == null) return null;
                 match.Entity = this;
             } else {
@@ -50,11 +50,6 @@ namespace TokenDiscovery {
                 match.StartAt = startAt;
                 match.Length = Literal.Length;
             }
-
-            /*
-            var nexts = Parser.Parse(text, startAt + match.Length, depth + 1);
-            if (nexts.Count > 0) match.Nexts = nexts;
-            */
             return match;
         }
 

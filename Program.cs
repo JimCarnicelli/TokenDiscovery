@@ -4,6 +4,8 @@ namespace TokenDiscovery {
     class Program {
 
         static string sourceText = @"
+Eating too much salt can kill you.
+
 Eating too much salt can kill you. Excessive salt intake will cause an 
 estimated 1.6 million deaths worldwide this year. Four out of five of these 
 deaths will occur in low- and middle-income countries, and nearly half will 
@@ -51,20 +53,11 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                 entity.Head.Next.NewNextEntity(parser.Entity("T or t"));
             }
 
-            foreach (var entity in parser.Entities) {
-                //Console.WriteLine(entity);  // + " -> " + entity.Describe());
-            }
-
             foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
                 string paragraphText = rawParagraph.Replace("\r\n", " ");
                 while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
                 while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
-                var matches = parser.Parse(paragraphText);
-
-                foreach (var match in matches) {
-                    Console.WriteLine("> " + rawParagraph.Substring(match.StartAt, match.Length) + "  |  " + match.Entity);
-                }
-
+                var allMatches = parser.Parse(paragraphText);
                 break;
             }
 

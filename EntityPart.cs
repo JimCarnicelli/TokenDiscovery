@@ -94,33 +94,17 @@ namespace TokenDiscovery {
             return part;
         }
 
-        public EntityMatch Match(string text, int startAt, int depth) {
+        public EntityMatch Match(string text, int startAt) {
             EntityMatch match = null;
             if (Entity != null) {
-                match = Entity.Match(text, startAt, depth);
+                match = Entity.Match(text, startAt);
                 if (match != null) return match;
             } else {
                 foreach (var Alt in Alternatives) {
-                    match = Alt.Match(text, startAt, depth + 1);
+                    match = Alt.Match(text, startAt);
                     if (match != null) return match;
                 }
             }
-            /*
-            if (Literal != null) {
-                if (startAt + Literal.Length >= text.Length) return null;  // Couldn't possibly match
-                var subText = text.Substring(startAt, Literal.Length);
-                if (subText == Literal) {
-                    entityMatch = new EntityMatch();
-                    entityMatch.StartAt = startAt;
-                    entityMatch.Length = Literal.Length;
-                    entityMatch.Entity = this;
-                }
-            }
-            if (entityMatch != null) {
-                Console.WriteLine(text.Substring(startAt, entityMatch.Length) + " -> " + entityMatch.Entity.ToString());
-                Parser.Parse(text, startAt + entityMatch.Length, depth + 1);
-            }
-            */
             return match;
         }
 
