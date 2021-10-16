@@ -9,6 +9,10 @@ namespace TokenDiscovery {
 
         public Parser Parser;
 
+        private static long NextId = 0;
+
+        public long Id;
+
         /// <summary>
         /// Ultimately all significant entities need descriptive names like "Digits", "Word", or "Quoted text"
         /// </summary>
@@ -23,6 +27,7 @@ namespace TokenDiscovery {
 
         public Entity(Parser parser, string literal = null) {
             Parser = parser;
+            Id = NextId++;
             if (literal == null) {
                 Head = new EntityPart(parser);
             } else {
@@ -36,12 +41,17 @@ namespace TokenDiscovery {
             return "( " + Head.Describe(0) + " )";
         }
 
-        public EntityMatch Match(string text, int startAt) {
-            EntityMatch match;
+        public EntityMatch Match(string text, int startAt, EntityMatchChain matchChain) {
+            if (startAt >= text.Length) return null;
+            EntityMatch match = matchChain.HasEntityStartingAt(startAt, this);
+            if (match != null) return match;
             if (Literal == null) {
-                match = Head.Match(text, startAt);
-                if (match == null) return null;
+                var innerMatch = Head.Match(text, startAt, matchChain);
+                if (innerMatch == null) return null;
+                match = new EntityMatch();
                 match.Entity = this;
+                match.StartAt = startAt;
+                match.Length = innerMatch.Length;
             } else {
                 if (startAt + Literal.Length > text.Length) return null;
                 if (text.Substring(startAt, Literal.Length) != Literal) return null;
@@ -50,6 +60,7 @@ namespace TokenDiscovery {
                 match.StartAt = startAt;
                 match.Length = Literal.Length;
             }
+            if (match.Length > 0) matchChain.Add(match);
             return match;
         }
 

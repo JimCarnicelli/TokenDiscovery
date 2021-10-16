@@ -24,6 +24,8 @@ namespace TokenDiscovery {
         }
 
         public Parser() {
+            var allChars = NewRootEntity();
+            allChars.Name = "All chars";
 
             // Generate an entity for each of the supported visible ASCII characters
             for (int i = 32; i < 127; i++) {
@@ -36,21 +38,38 @@ namespace TokenDiscovery {
                         entity.Name = entity.Literal;
                         break;
                 }
+
+                allChars.Head.AddAlternative(entity);
             }
+
+            var letters = NewRootEntity();
+            letters.Name = "Letter";
+
+            var upperCaseLetters = NewRootEntity();
+            upperCaseLetters.Name = "Uppercase";
+            letters.Head.AddAlternative(upperCaseLetters);
+
+            var lowerCaseLetters = NewRootEntity();
+            lowerCaseLetters.Name = "Lowercase";
+            letters.Head.AddAlternative(lowerCaseLetters);
 
             // Generate an entity for all letters with both upper and lower case versions of each
             for (char c = 'A'; c <= 'Z'; c++) {
-                string lowerC = c.ToString().ToLower();
+                string upperC = c.ToString();
+                string lowerC = upperC.ToLower();
                 var entity = NewRootEntity();
-                entity.Name = c + " or " + lowerC;
-                entity.Head.AddAlternative(Entity("" + c));
+                entity.Name = c + lowerC;
+                entity.Head.AddAlternative(Entity(upperC));
                 entity.Head.AddAlternative(Entity(lowerC));
+
+                upperCaseLetters.Head.AddAlternative(Entity(upperC));
+                lowerCaseLetters.Head.AddAlternative(Entity(lowerC));
             }
 
         }
 
-        public List<EntityMatch>[] Parse(string text, int startAt = 0) {
-            
+        public EntityMatchChain Parse(string text) {
+
             // We'll create an array with the same number of elements as the characters 
             // in the text. Each element will represent a character position at which we 
             // had a reason to start parsing for a single element. As soon as we find one 
@@ -67,32 +86,27 @@ namespace TokenDiscovery {
             // before and after it. That massive redundancy collapses down to this neat 
             // structure.
 
-            // One array element per character position. All nulls at first.
-            var allMatches = new List<EntityMatch>[text.Length];
-            // The first place we are guaranteed to find at least one match is the first character.
-            allMatches[0] = new List<EntityMatch>();
+            var matchChain = new EntityMatchChain(text);
 
             for (int i = 0; i < text.Length; i++) {
                 // If we have not found any earlier matches whose next characters would be
                 // here then we never will. Move on past this one.
-                if (allMatches[i] == null) continue;
+                if (matchChain[i] == null) continue;
 
                 // Test all entities for possible matches starting at this character position
                 foreach (var entity in Entities) {
-                    var match = entity.Match(text, i);
-                    // Did this entity successfully match? Most won't.
-                    if (match != null) {
-                        allMatches[i].Add(match);
-                        int justAfterMatch = i + match.Length;
-                        if (justAfterMatch < text.Length && allMatches[justAfterMatch] == null) {
-                            // We found at least one match that ends just prior to this character position
-                            allMatches[justAfterMatch] = new List<EntityMatch>();
-                        }
+                    var match = entity.Match(text, i, matchChain);
+                    if (match != null && match.Length > 0) {
+                        matchChain.Add(match);
                     }
                 }
 
+                foreach (var match in matchChain[i].Values) {
+                    Console.WriteLine(new string(' ', i) + match.Entity + " >> " + text.Substring(match.StartAt, match.Length));
+                }
+
             }
-            return allMatches;
+            return matchChain;
         }
 
     }

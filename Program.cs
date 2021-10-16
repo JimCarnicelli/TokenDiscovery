@@ -47,17 +47,22 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             {
                 var entity = parser.NewRootEntity();
-                entity.Name = "Eat";
-                entity.Head.Entity = parser.Entity("E or e");
-                entity.Head.NewNextEntity(parser.Entity("A or a"));
-                entity.Head.Next.NewNextEntity(parser.Entity("T or t"));
+                //entity.Name = "String of letters";
+                entity.Head.Entity = parser.Entity("Letter");
+                entity.Head.LookBehind = true;
+                entity.Head.Not = true;
+                var part = entity.Head.NewNextPart(parser.Entity("Letter"));
+                part.MinQuantity = 2;
+                part.MaxQuantity = int.MaxValue;
+                part = entity.Head.Next.NewNextPart(parser.Entity("Letter"));
+                part.Not = true;
             }
 
             foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
                 string paragraphText = rawParagraph.Replace("\r\n", " ");
                 while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
                 while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
-                var allMatches = parser.Parse(paragraphText);
+                var matchChain = parser.Parse(paragraphText);
                 break;
             }
 
