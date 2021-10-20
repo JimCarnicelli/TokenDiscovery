@@ -4,8 +4,6 @@ namespace TokenDiscovery {
     class Program {
 
         static string sourceText = @"
-Eating too much salt can kill you.
-
 Eating too much salt can kill you. Excessive salt intake will cause an 
 estimated 1.6 million deaths worldwide this year. Four out of five of these 
 deaths will occur in low- and middle-income countries, and nearly half will 
@@ -43,11 +41,13 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 ";
 
         static void Main(string[] args) {
+            Console.WriteLine("Starting");
             var parser = new Parser();
 
+            /*
             {
-                var entity = parser.NewRootEntity();
-                //entity.Name = "String of letters";
+                var entity = new Entity(parser, EntityType.Experimental);
+                entity.Name = "Word";
                 entity.Head.Entity = parser.Entity("Letter");
                 entity.Head.LookBehind = true;
                 entity.Head.Not = true;
@@ -56,14 +56,26 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                 part.MaxQuantity = int.MaxValue;
                 part = entity.Head.Next.NewNextPart(parser.Entity("Letter"));
                 part.Not = true;
+                parser.RegisterEntity(entity);
             }
+            */
 
-            foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
-                string paragraphText = rawParagraph.Replace("\r\n", " ");
-                while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
-                while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
-                var matchChain = parser.Parse(paragraphText);
-                break;
+            const int iterations = 3;
+            for (int i = 0; i < iterations; i++) {
+                parser.ClearSurveyCounts();
+
+                if (i > 0) Console.WriteLine("#########################################################");
+                foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
+                    string paragraphText = rawParagraph.Replace("\r\n", " ");
+                    paragraphText = paragraphText.Replace("  ", " ").Replace("  ", " ").Replace("  ", " ");
+                    while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
+                    while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
+                    var matchChain = parser.Parse(paragraphText);
+                    parser.SurveyChain(matchChain, i);
+                    //break;
+                }
+
+                parser.SurveyResults(i);
             }
 
             Console.WriteLine("Done");

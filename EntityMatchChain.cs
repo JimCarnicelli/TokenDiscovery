@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace TokenDiscovery {
     public class EntityMatchChain {
 
+        public int Length;
         public string Text;
         public Dictionary<long, EntityMatch>[] Starts;
         public Dictionary<long, EntityMatch>[] Ends;
@@ -19,8 +20,9 @@ namespace TokenDiscovery {
 
         public EntityMatchChain(string text) {
             Text = text;
-            Starts = new Dictionary<long, EntityMatch>[Text.Length];
-            Ends = new Dictionary<long, EntityMatch>[Text.Length];
+            Length = Text.Length;
+            Starts = new Dictionary<long, EntityMatch>[Length];
+            Ends = new Dictionary<long, EntityMatch>[Length];
             Starts[0] = new Dictionary<long, EntityMatch>();
             Ends[0] = new Dictionary<long, EntityMatch>();
         }
@@ -53,6 +55,19 @@ namespace TokenDiscovery {
                 Ends[match.StartAt + match.Length - 1] = new Dictionary<long, EntityMatch>();
             }
             Ends[match.StartAt + match.Length - 1][match.Entity.Id] = match;
+        }
+
+        public string Describe() {
+            string description = "";
+            for (int i = 0; i < Length; i++) {
+                description += i + ": " + Text.Substring(i, 1) + " ---------\n";
+                if (Starts[i] == null) continue;
+                foreach (var match in Starts[i].Values) {
+                    description += "  " + match.Entity + "\n";
+                    description += "    " + Text.Substring(match.StartAt, match.Length).Replace(" ", "_") + "\n";
+                }
+            }
+            return description;
         }
 
     }

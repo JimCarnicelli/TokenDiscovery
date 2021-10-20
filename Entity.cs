@@ -5,11 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TokenDiscovery {
+
+    public enum EntityType {
+        Trivial,
+        Baseline,
+        Derived,
+        Experimental
+    }
+
     public class Entity {
 
         public Parser Parser;
 
         private static long NextId = 0;
+
+        public EntityType Type = EntityType.Experimental;
 
         public long Id;
 
@@ -25,8 +35,16 @@ namespace TokenDiscovery {
 
         public EntityPart Head;
 
-        public Entity(Parser parser, string literal = null) {
+        public int SurveyScore = 0;
+        public int SurveyCounts = 0;
+        public int SurveyLength = 0;
+        public int SurveyLongest = 0;
+        public Dictionary<int, bool> SurveyCoverage = new();
+        public Dictionary<string, int> SurveyExamples;
+
+        public Entity(Parser parser, EntityType type, string literal = null) {
             Parser = parser;
+            this.Type = type;
             Id = NextId++;
             if (literal == null) {
                 Head = new EntityPart(parser);
@@ -36,9 +54,22 @@ namespace TokenDiscovery {
         }
 
         public override string ToString() {
+            return ToString(true);
+        }
+
+        public string ToString(bool forceParentheses) {
             if (Name != null) return Name;
             if (Literal != null) return "\"" + Literal + "\"";
-            return "( " + Head.Describe(0) + " )";
+            string description = Describe();
+            if (!forceParentheses && Head.MinQuantity == 1 && Head.MaxQuantity == 1) {
+                return description;
+            }
+            return "( " + description + " )";
+        }
+
+        public string Describe() {
+            if (Literal != null) return Literal;
+            return Head.Describe(0);
         }
 
         public EntityMatch Match(string text, int startAt, EntityMatchChain matchChain) {
@@ -61,6 +92,12 @@ namespace TokenDiscovery {
                 match.Length = Literal.Length;
             }
             if (match.Length > 0) matchChain.Add(match);
+
+            if (SurveyExamples == null) SurveyExamples = new Dictionary<string, int>();
+            var sampleText = text.Substring(startAt, match.Length);
+            SurveyExamples.TryGetValue(sampleText, out int count);
+            SurveyExamples[sampleText] = count + 1;
+
             return match;
         }
 

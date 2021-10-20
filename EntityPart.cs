@@ -30,8 +30,6 @@ namespace TokenDiscovery {
 
         public int MaxQuantity = 1;
 
-        public bool Greedy = true;
-
         public EntityPart Next;
 
         public EntityPart(Parser parser) {
@@ -43,25 +41,28 @@ namespace TokenDiscovery {
 
             if (LookAhead) text += ">";
             if (Entity != null) {
-                text += Entity.ToString();
+                //text += Entity.ToString(false);
+                text += Entity.ToString(true);
             } else if (Alternatives != null) {
-                if (Alternatives.Count > 1 && depth > 0) text += "( ";
+                text += "( ";
                 for (int i = 0; i < Alternatives.Count; i++) {
                     if (i > 0) text += " | ";
                     var alt = Alternatives[i];
-                    if (alt.Entity != null && alt.Entity.Name != null) {
-                        text += alt.Entity.Name;
-                    } else {
-                        text += alt.Describe(depth + 1);
-                    }
+                    text += alt.Describe(depth + 1);
                 }
-                if (Alternatives.Count > 1 && depth > 0) text += " )";
+                text += " )";
             }
 
             if (Not) {
                 text += "!";
             } else if (MinQuantity == 1 && MaxQuantity == 1) {
                 // Nothing to add here
+            } else if (MinQuantity == 0 && MaxQuantity == 1) {
+                text += "?";
+            } else if (MinQuantity == 0 && MaxQuantity == int.MaxValue) {
+                text += "*";
+            } else if (MinQuantity == 1 && MaxQuantity == int.MaxValue) {
+                text += "+";
             } else if (MaxQuantity == int.MaxValue) {
                 text += "{" + MinQuantity + "+}";
             } else {
@@ -145,20 +146,14 @@ namespace TokenDiscovery {
 
             if (matches.Count < MinQuantity) return null;
 
-            EntityMatch combinedMatch;
-            if (matches.Count == 1) {
-                combinedMatch = matches[0];
-            } else if (matches.Count == 0) {
-                combinedMatch = new EntityMatch();
-                combinedMatch.StartAt = startAt;
+            EntityMatch combinedMatch = new EntityMatch();
+            combinedMatch.StartAt = startAt;
+            if (matches.Count == 0) {
                 combinedMatch.Length = 0;
                 combinedMatch.Count = 0;
             } else {
-                combinedMatch = new EntityMatch();
-                combinedMatch.StartAt = startAt;
                 combinedMatch.Length = totalLength;
                 combinedMatch.Count = matches.Count;
-                combinedMatch.SubMatches = matches;
             }
 
             // Is there a next part that must also match?
