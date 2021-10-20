@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TokenDiscovery {
+namespace TokenDiscovery_V1 {
     
     /// <summary>
     /// The top level that learns how to parse and does it

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TokenDiscovery {
+namespace TokenDiscovery_V1 {
     class Program {
 
         static string sourceText = @"

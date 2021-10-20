@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TokenDiscovery {
+namespace TokenDiscovery_V1 {
 
     /// <summary>
     /// A single class defined by a chain of entities such as a word, number, quoted text, etc

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TokenDiscovery {
+namespace TokenDiscovery_V1 {
 
     public class EntityMatch {
         public int StartAt;
