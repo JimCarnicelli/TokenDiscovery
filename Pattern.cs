@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace TokenDiscovery {
+    public class Pattern {
+
+        public TokenParser Parser;
+
+        public int Id = -1;
+
+        public string Name;
+
+        public string Literal;
+
+        public PatternPart Head;
+
+        public Pattern(TokenParser parser) {
+            Parser = parser;
+        }
+
+        private static Regex regexSafeName = new Regex("^[A-Za-z][-_A-Za-z0-9]*$");
+
+        public override string ToString() {
+            return ToString(false);
+        }
+
+        public string ToString(bool useIdIfNameless) {
+            if (Name != null) {
+                if (regexSafeName.IsMatch(Name)) return Name;
+                return "'" + Name.Replace("'", "''") + "'";
+            } else if (useIdIfNameless) {
+                return "[" + Id + "]";
+            }
+            return Describe(false);
+        }
+
+        public string Describe(bool useIds = false) {
+            if (Literal != null) return "'" + Literal.Replace("'", "''") + "'";
+            return Head.ToString(true, false, useIds);
+        }
+
+    }
+}

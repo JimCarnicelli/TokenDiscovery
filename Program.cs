@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace TokenDiscovery_V1 {
+namespace TokenDiscovery {
     class Program {
 
         static string sourceText = @"
@@ -40,46 +41,45 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 (strokes and heart attacks combined) by 13%.
 ";
 
-        static void Old_Main(string[] args) {
+        static void Main(string[] args) {
             Console.WriteLine("Starting");
-            var parser = new Parser();
 
-            /*
-            {
-                var entity = new Entity(parser, EntityType.Experimental);
-                entity.Name = "Word";
-                entity.Head.Entity = parser.Entity("Letter");
-                entity.Head.LookBehind = true;
-                entity.Head.Not = true;
-                var part = entity.Head.NewNextPart(parser.Entity("Letter"));
-                part.MinQuantity = 2;
-                part.MaxQuantity = int.MaxValue;
-                part = entity.Head.Next.NewNextPart(parser.Entity("Letter"));
-                part.Not = true;
-                parser.RegisterEntity(entity);
+            // Pre-parse the raw text into a set of paragraphs with some text cleanup
+            var paragraphs = new List<string>();
+            foreach (var rawParagraph in sourceText.Split("\r\n\r\n")) {
+                string paragraphText = rawParagraph.Replace("\r\n", " ");
+                paragraphText = paragraphText.Replace("  ", " ").Replace("  ", " ").Replace("  ", " ");
+                while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
+                while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
+                paragraphs.Add(paragraphText);
             }
-            */
 
-            const int iterations = 3;
-            for (int i = 0; i < iterations; i++) {
-                parser.ClearSurveyCounts();
+            var parser = new TokenParser();
 
-                if (i > 0) Console.WriteLine("#########################################################");
-                foreach (string rawParagraph in sourceText.Split("\r\n\r\n")) {
-                    string paragraphText = rawParagraph.Replace("\r\n", " ");
-                    paragraphText = paragraphText.Replace("  ", " ").Replace("  ", " ").Replace("  ", " ");
-                    while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
-                    while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
-                    var matchChain = parser.Parse(paragraphText);
-                    parser.SurveyChain(matchChain, i);
-                    //break;
-                }
+            parser.RegisterLiteral("A", "A");
+            parser.RegisterLiteral("a", "a");
+            parser.RegisterLiteral("B", "B");
+            parser.RegisterLiteral("C", "C");
+            parser.RegisterLiteral("D", "D");
+            parser.RegisterLiteral("E", "E");
+            parser.Register(null, "A B C");
 
-                parser.SurveyResults(i);
+            var p = parser.NewPattern("Aa", "A | (a | [6] (C D) E)");
+            Console.WriteLine(p.Describe());
+
+            Console.WriteLine("Patterns:");
+            foreach (var pattern in parser.Patterns.Values) {
+                Console.WriteLine("- [" + pattern.Id + "]" + (pattern.Name == null ? "" : " " + pattern.Name) + ": " + pattern.Describe());
+            }
+
+            // Process each of the paragraphs
+            foreach (var paragraph in paragraphs) {
+                //Console.WriteLine(paragraph + "\n");
             }
 
             Console.WriteLine("Done");
             Console.ReadLine();
         }
+
     }
 }
