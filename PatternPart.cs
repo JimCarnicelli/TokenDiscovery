@@ -5,6 +5,9 @@ using System.Linq;
 namespace TokenDiscovery {
     public class PatternPart {
 
+        #region Public properties
+
+
         public TokenParser Parser;
 
         public Pattern Pattern;
@@ -16,6 +19,11 @@ namespace TokenDiscovery {
         public int MinQuantity = 1;
 
         public int MaxQuantity = 1;  // -1 = unlimited
+
+        public bool NonePrior = false;
+
+
+        #endregion
 
         public PatternPart(TokenParser parser) {
             Parser = parser;
@@ -32,14 +40,15 @@ namespace TokenDiscovery {
             string text = "";
 
             if (Pattern != null) {
-                text = Pattern.ToString(useIdsForNameless);
+                text += Pattern.ToString(useIdsForNameless);
                 if (Pattern.Name == null && !useIdsForNameless && text[0] != '(') {
-                    text = "(" + text + ")";
+                    text += "(" + text + ")";
                 }
 
             } else {  // Alternatives
-                foreach (var alt in Alternatives) {
-                    if (text != "") text += " | ";
+                for (int i = 0; i < Alternatives.Count; i++) {
+                    if (i > 0) text += " | ";
+                    var alt = Alternatives[i];
                     text += alt.ToString(false, false, useIdsForNameless);
                 }
 
@@ -47,6 +56,8 @@ namespace TokenDiscovery {
                     text = "(" + text + ")";
                 }
             }
+
+            if (NonePrior) text = "^" + text;
 
             if (MinQuantity == 0 && MaxQuantity == 0) {
                 text += "!";
@@ -74,6 +85,9 @@ namespace TokenDiscovery {
 
         public string ToDebugString(string indent = "") {
             string text = indent + "{\n";
+            if (NonePrior) {
+                text += indent + "  NonePrior: true\n";
+            }
             if (MinQuantity != 1) {
                 text += indent + "  MinQuantity: " + MinQuantity + "\n";
             }
@@ -118,125 +132,9 @@ namespace TokenDiscovery {
             Pattern = from.Pattern;
             Alternatives = from.Alternatives;
             Next = from.Next;
+            NonePrior = from.NonePrior;
             MinQuantity = from.MinQuantity;
             MaxQuantity = from.MaxQuantity;
-        }
-
-        public void ParsePatternText(string text, int startAt, out int endAt, int parethesesDepth = 0) {
-            if (!SkipWhitespace(text, ref startAt)) throw new Exception("Unexpected end of pattern");
-
-            if (text[startAt] == '(') {
-                ParsePatternText(text, startAt + 1, out endAt, 1);
-                if (endAt >= text.Length) throw new Exception("Unexpected end of pattern");
-                startAt = endAt;
-                //if (text[startAt] != ')') throw new Exception("Expecting ')' at " + startAt + ": " + text.Substring(startAt));
-                //startAt++;
-                return;
-            }
-
-            var alts = new List<PatternPart>();
-            while (true) {
-
-                var part = ParsePatterText_NextAlt(text, ref startAt, parethesesDepth);
-                alts.Add(part);
-
-                if (!SkipWhitespace(text, ref startAt)) break;
-
-                if (text[startAt] == '|') {
-                    startAt++;
-                    if (!SkipWhitespace(text, ref startAt)) break;
-                    continue;
-                }
-                if (text[startAt] == ')') {
-                    if (parethesesDepth > 0) break;
-                    throw new Exception("Unexpected ')' at " + startAt + ": " + text.Substring(startAt));
-                }
-                break;
-            }
-
-            if (alts.Count == 0) {
-                throw new Exception("Expecting one or more alternatives: " + text.Substring(startAt));
-            } else if (alts.Count == 1) {
-                // Copy the only alternative's settings into my own object
-                var part = alts[0];
-                Pattern = part.Pattern;
-                Alternatives = part.Alternatives;
-                Next = part.Next;
-            } else {
-                Alternatives = alts;
-            }
-
-            if (SkipWhitespace(text, ref startAt)) {
-                if (text[startAt] == ')') {
-                    if (parethesesDepth == 0) {
-                        throw new Exception("Unexpected ')' at " + startAt + ": " + text.Substring(startAt));
-                    }
-                    if (parethesesDepth == 1) startAt++;
-                } else {
-                    Next = new PatternPart(Parser);
-                    Next.ParsePatternText(text, startAt, out endAt, parethesesDepth);
-                    return;
-                }
-            }
-
-            endAt = startAt;
-        }
-
-        public PatternPart ParsePatterText_NextAlt(string text, ref int startAt, int parenthesesDepth) {
-            if (text[startAt] == '(') {
-                startAt++;
-                var subPart = new PatternPart(Parser);
-                subPart.ParsePatternText(text, startAt, out int endAt, 1);
-                startAt = endAt;
-                if (startAt >= text.Length) throw new Exception("Unexpected end of pattern");
-                if (text[startAt] != ')') throw new Exception("Expecting ')' at " + startAt + ": " + text.Substring(startAt));
-                startAt++;
-                return subPart;
-            }
-
-            var part = new PatternPart(Parser);
-
-            string tokenText = "";
-            while (
-                startAt < text.Length &&
-                text[startAt] != ' ' &&
-                text[startAt] != '|' &&
-                text[startAt] != ')'
-            ) {
-                tokenText += text[startAt];
-                startAt++;
-            }
-
-            if (!Parser.PatternsByName.TryGetValue(tokenText, out Pattern pattern)) throw new Exception("No such pattern named '" + tokenText + "'");
-            part.Pattern = pattern;
-
-            if (SkipWhitespace(text, ref startAt)) {
-                if (text[startAt] == ')') return part;
-                if (text[startAt] == '|') return part;
-
-                part.Next = new PatternPart(Parser);
-                part.Next.ParsePatternText(text, startAt, out int endAt, parenthesesDepth);
-                startAt = endAt;
-            }
-
-            return part;
-        }
-
-        private bool SkipWhitespace(string text, ref int startAt) {
-            while (true) {
-                if (startAt >= text.Length) return false;  // No more text remaining
-                char c = text[startAt];
-                if (
-                    c == ' ' ||
-                    c == '\t' ||
-                    c == '\r' ||
-                    c == '\n'
-                ) {
-                    startAt++;
-                    continue;
-                }
-                return true;  // More text remaining
-            }
         }
 
 

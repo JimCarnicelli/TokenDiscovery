@@ -6,9 +6,15 @@ using System.Text.RegularExpressions;
 namespace TokenDiscovery {
     public class TokenParser {
 
+        #region Public properties
+
+
         public Dictionary<int, Pattern> Patterns = new();
 
         public Dictionary<string, Pattern> PatternsByName = new();
+
+
+        #endregion
 
         #region Construction and registration of patterns
 
@@ -69,6 +75,7 @@ namespace TokenDiscovery {
             var alts = new List<List<PatternPart>>();
             string token;
             PatternPart currentPart = null;
+            bool nonePrior = false;
 
             var currentAlt = new List<PatternPart>();
             alts.Add(currentAlt);
@@ -76,6 +83,7 @@ namespace TokenDiscovery {
                 token = tokens[startAt];
                 switch (token[0]) {
                     case '|':
+                        if (nonePrior) throw new Exception("Found ^ before " + token);
                         currentPart = null;
                         currentAlt = new List<PatternPart>();
                         alts.Add(currentAlt);
@@ -84,6 +92,10 @@ namespace TokenDiscovery {
                     case '(':
                         startAt++;
                         currentPart = NewPattern_Part(tokens, ref startAt);
+                        if (nonePrior) {
+                            currentPart.NonePrior = true;
+                            nonePrior = false;
+                        }
                         currentAlt.Add(currentPart);
                         if (startAt >= tokens.Count) throw new Exception("Unexpected end of pattern");
                         if (tokens[startAt] != ")") throw new Exception("Expecting ')' instead of '" + tokens[startAt] + "'");
@@ -91,7 +103,7 @@ namespace TokenDiscovery {
                         break;
 
                     case '^':
-                        // TODO: Implement
+                        nonePrior = true;
                         startAt++;
                         break;
 
@@ -100,6 +112,7 @@ namespace TokenDiscovery {
                     case '*':
                     case '+':
                     case '{':
+                        if (nonePrior) throw new Exception("Found ^ before " + token);
                         if (currentPart == null) {
                             if (startAt == 0) {
                                 throw new Exception("Found '" + token + "' quantifier at pattern start");
@@ -149,10 +162,15 @@ namespace TokenDiscovery {
                         break;
 
                     case ')':
+                        if (nonePrior) throw new Exception("Found ^ before " + token);
                         break;
                     case '[':
                         token = token.Substring(1, token.Length - 2).Replace("''", "'");
                         currentPart = new PatternPart(this);
+                        if (nonePrior) {
+                            currentPart.NonePrior = true;
+                            nonePrior = false;
+                        }
                         int tokenId = int.Parse(token);
                         if (!Patterns.TryGetValue(tokenId, out currentPart.Pattern)) {
                             throw new Exception("No such pattern with ID = " + tokenId);
@@ -165,6 +183,10 @@ namespace TokenDiscovery {
                             token = token.Substring(1, token.Length - 2).Replace("''", "'");
                         }
                         currentPart = new PatternPart(this);
+                        if (nonePrior) {
+                            currentPart.NonePrior = true;
+                            nonePrior = false;
+                        }
                         if (!PatternsByName.TryGetValue(token, out currentPart.Pattern)) {
                             throw new Exception("No such pattern named '" + token + "'");
                         }
@@ -198,6 +220,7 @@ namespace TokenDiscovery {
                 candidate.Alternatives.Count == 1 &&
                 candidate.Alternatives[0].Pattern != null &&
                 candidate.Alternatives[0].Next == null &&
+                !candidate.Alternatives[0].NonePrior &&
                 candidate.Alternatives[0].MinQuantity == 1 &&
                 candidate.Alternatives[0].MaxQuantity == 1
             ) {
@@ -208,6 +231,7 @@ namespace TokenDiscovery {
 
             } else if (
                 candidate.Alternatives.Count == 1 &&
+                !candidate.NonePrior &&
                 candidate.MinQuantity == 1 &&
                 candidate.MaxQuantity == 1
             ) {

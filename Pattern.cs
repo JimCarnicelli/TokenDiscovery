@@ -6,15 +6,23 @@ using System.Text.RegularExpressions;
 namespace TokenDiscovery {
     public class Pattern {
 
+        #region Public properties
+
+
         public TokenParser Parser;
 
         public int Id = -1;
 
         public string Name;
 
+        public string Tag;
+
         public string Literal;
 
         public PatternPart Head;
+
+
+        #endregion
 
         public Pattern(TokenParser parser) {
             Parser = parser;
