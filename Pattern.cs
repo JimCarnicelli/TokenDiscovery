@@ -34,12 +34,21 @@ namespace TokenDiscovery {
             return ToString(false);
         }
 
+        public string Identity {
+            get {
+                if (Name != null) {
+                    if (regexSafeName.IsMatch(Name)) return Name;
+                    return "'" + Name.Replace("'", "''") + "'";
+                } else if (Id >= 0) {
+                    return "[" + Id + "]";
+                }
+                throw new Exception("This pattern has no identity");
+            }
+        }
+
         public string ToString(bool useIdIfNameless) {
-            if (Name != null) {
-                if (regexSafeName.IsMatch(Name)) return Name;
-                return "'" + Name.Replace("'", "''") + "'";
-            } else if (useIdIfNameless) {
-                return "[" + Id + "]";
+            if (Name != null || useIdIfNameless) {
+                return Identity;
             }
             return Describe(false);
         }

@@ -75,7 +75,7 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             Console.WriteLine("Patterns:");
             foreach (var pattern in parser.Patterns.Values) {
-                Console.WriteLine("- [" + pattern.Id + "]" + (pattern.Name == null ? "" : " " + pattern.Name) + ": " + pattern.Describe());
+                Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe());
             }
 
             // Process each of the paragraphs
