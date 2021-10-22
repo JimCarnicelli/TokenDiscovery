@@ -62,10 +62,16 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
             parser.RegisterLiteral("C", "C");
             parser.RegisterLiteral("D", "D");
             parser.RegisterLiteral("E", "E");
-            parser.Register(null, "A B C");
+            parser.Register("Aa", "A | a");
 
-            var p = parser.NewPattern("Aa", "A | (a | [6] (C D) E)");
-            Console.WriteLine(p.Describe());
+            try {
+                var p = parser.NewPattern("A ^B+ C");
+                Console.WriteLine(p.Describe());
+                Console.WriteLine(p.Head.ToDebugString());
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                Console.ReadLine();
+            }
 
             Console.WriteLine("Patterns:");
             foreach (var pattern in parser.Patterns.Values) {

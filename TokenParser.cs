@@ -42,7 +42,7 @@ namespace TokenDiscovery {
         }
 
         private static Regex regexPatternToken = new(
-            @"^(?<Token>( \( | \) | \| | [-_A-Za-z]+ | '('' | [^'])+' | \[\d{1,9}\] ) \s* )+$",
+            @"^\s* (?<Token>( \( | \| | \[\d{1,9}\] | [A-Za-z]+[-_A-Za-z]* | '('' | [^'])+' | \) | \^ | \! | \? | \* | \+ | \{ \s* \d+ \s* (\- \s* \d+ | \+)? \s* \} ) \s* )+$",
             RegexOptions.IgnorePatternWhitespace
         );
 
@@ -68,47 +68,107 @@ namespace TokenDiscovery {
         private PatternPart NewPattern_Part(List<string> tokens, ref int startAt) {
             var alts = new List<List<PatternPart>>();
             string token;
-            PatternPart part;
+            PatternPart currentPart = null;
 
             var currentAlt = new List<PatternPart>();
             alts.Add(currentAlt);
             while (startAt < tokens.Count) {
                 token = tokens[startAt];
                 switch (token[0]) {
-                    case ')':
-                        break;
                     case '|':
+                        currentPart = null;
                         currentAlt = new List<PatternPart>();
                         alts.Add(currentAlt);
                         startAt++;
                         break;
                     case '(':
                         startAt++;
-                        part = NewPattern_Part(tokens, ref startAt);
-                        currentAlt.Add(part);
+                        currentPart = NewPattern_Part(tokens, ref startAt);
+                        currentAlt.Add(currentPart);
                         if (startAt >= tokens.Count) throw new Exception("Unexpected end of pattern");
                         if (tokens[startAt] != ")") throw new Exception("Expecting ')' instead of '" + tokens[startAt] + "'");
                         startAt++;
                         break;
+
+                    case '^':
+                        // TODO: Implement
+                        startAt++;
+                        break;
+
+                    case '!':
+                    case '?':
+                    case '*':
+                    case '+':
+                    case '{':
+                        if (currentPart == null) {
+                            if (startAt == 0) {
+                                throw new Exception("Found '" + token + "' quantifier at pattern start");
+                            } else {
+                                throw new Exception("Found '" + token + "' quantifier after non-token: " + tokens[startAt - 1]);
+                            }
+                        }
+
+                        if (currentPart.Next != null) {
+                            var innerPart = new PatternPart(this);
+                            innerPart.Import(currentPart);
+                            currentPart.Clear();
+                            currentPart.Alternatives = new();
+                            currentPart.Alternatives.Add(innerPart);
+                        }
+
+                        if (token == "!") {
+                            currentPart.MinQuantity = 0;
+                            currentPart.MaxQuantity = 0;
+                        } else if (token == "?") {
+                            currentPart.MinQuantity = 0;
+                        } else if (token == "*") {
+                            currentPart.MinQuantity = 0;
+                            currentPart.MaxQuantity = -1;  // Unlimited
+                        } else if (token == "+") {
+                            currentPart.MinQuantity = 1;
+                            currentPart.MaxQuantity = -1;  // Unlimited
+                        } else {
+                            var strippedToken = token.Substring(1, token.Length - 2).Replace(" ", "");
+                            if (strippedToken.Contains("-")) {
+                                var parts = strippedToken.Split("-");
+                                currentPart.MinQuantity = int.Parse(parts[0]);
+                                currentPart.MaxQuantity = int.Parse(parts[1]);
+                                if (currentPart.MinQuantity > currentPart.MaxQuantity) {
+                                    throw new Exception("Range quantifier cannot have max less than min: " + token);
+                                }
+                            } else if (strippedToken.EndsWith("+")) {
+                                currentPart.MinQuantity = int.Parse(strippedToken.Substring(0, strippedToken.Length - 1));
+                                currentPart.MaxQuantity = -1;  // Unlimited
+                            } else {
+                                currentPart.MinQuantity = int.Parse(strippedToken);
+                                currentPart.MaxQuantity = currentPart.MinQuantity;
+                            }
+                        }
+                        currentPart = null;
+                        startAt++;
+                        break;
+
+                    case ')':
+                        break;
                     case '[':
                         token = token.Substring(1, token.Length - 2).Replace("''", "'");
-                        part = new PatternPart(this);
+                        currentPart = new PatternPart(this);
                         int tokenId = int.Parse(token);
-                        if (!Patterns.TryGetValue(tokenId, out part.Pattern)) {
+                        if (!Patterns.TryGetValue(tokenId, out currentPart.Pattern)) {
                             throw new Exception("No such pattern with ID = " + tokenId);
                         }
-                        currentAlt.Add(part);
+                        currentAlt.Add(currentPart);
                         startAt++;
                         break;
                     default:
                         if (token[0] == '\'') {
                             token = token.Substring(1, token.Length - 2).Replace("''", "'");
                         }
-                        part = new PatternPart(this);
-                        if (!PatternsByName.TryGetValue(token, out part.Pattern)) {
+                        currentPart = new PatternPart(this);
+                        if (!PatternsByName.TryGetValue(token, out currentPart.Pattern)) {
                             throw new Exception("No such pattern named '" + token + "'");
                         }
-                        currentAlt.Add(part);
+                        currentAlt.Add(currentPart);
                         startAt++;
                         break;
                 }
@@ -117,15 +177,11 @@ namespace TokenDiscovery {
             }
 
             var thisPart = new PatternPart(this);
-            if (alts.Count == 1) {
-                NewPattern_PartChain(thisPart, alts[0], 0);
-            } else {
-                thisPart.Alternatives = new List<PatternPart>();
-                foreach (var alt in alts) {
-                    var altPart = new PatternPart(this);
-                    NewPattern_PartChain(altPart, alt, 0);
-                    thisPart.Alternatives.Add(altPart);
-                }
+            thisPart.Alternatives = new List<PatternPart>();
+            foreach (var alt in alts) {
+                var altPart = new PatternPart(this);
+                NewPattern_PartChain(altPart, alt, 0);
+                thisPart.Alternatives.Add(altPart);
             }
 
             return thisPart;
@@ -135,11 +191,35 @@ namespace TokenDiscovery {
             if (index >= partList.Count) return;
             var candidate = partList[index];
             if (candidate.Pattern != null && candidate.Next == null) {
-                thisPart.Pattern = candidate.Pattern;
+                thisPart.Import(candidate);
+
+            } else if (
+                (candidate.MinQuantity != 1 || candidate.MaxQuantity != 1) &&
+                candidate.Alternatives.Count == 1 &&
+                candidate.Alternatives[0].Pattern != null &&
+                candidate.Alternatives[0].Next == null &&
+                candidate.Alternatives[0].MinQuantity == 1 &&
+                candidate.Alternatives[0].MaxQuantity == 1
+            ) {
+                var alt = candidate.Alternatives[0];
+                candidate.Pattern = alt.Pattern;
+                candidate.Alternatives = null;
+                thisPart.Import(candidate);
+
+            } else if (
+                candidate.Alternatives.Count == 1 &&
+                candidate.MinQuantity == 1 &&
+                candidate.MaxQuantity == 1
+            ) {
+                var innerPart = candidate.Alternatives[0];
+                thisPart.Import(innerPart);
+
             } else {
                 thisPart.Alternatives = new List<PatternPart>();
                 thisPart.Alternatives.Add(candidate);
+
             }
+
             if (index + 1 < partList.Count) {
                 thisPart.Next = new PatternPart(this);
                 NewPattern_PartChain(thisPart.Next, partList, index + 1);
