@@ -56,6 +56,7 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             var parser = new TokenParser();
             parser.RegisterBasics();
+            var x = parser.Register(null, "<(A a)! B >C!");
 
             Console.WriteLine("Patterns:");
             foreach (var pattern in parser.Patterns.Values) {

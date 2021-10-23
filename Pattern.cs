@@ -39,7 +39,7 @@ namespace TokenDiscovery {
 
         public string Literal;
 
-        public PatternPart Head;
+        public PatternElement Root;
 
 
         #endregion
@@ -76,7 +76,7 @@ namespace TokenDiscovery {
 
         public string Describe(bool useIds = false) {
             if (Literal != null) return "'" + Literal.Replace("'", "''") + "'";
-            return Head.ToString(true, false, useIds);
+            return Root.ToString(true, false, useIds);
         }
 
     }

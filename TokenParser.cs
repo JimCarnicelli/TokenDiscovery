@@ -24,6 +24,14 @@ namespace TokenDiscovery {
 
         private int NextId = 0;
 
+        public Pattern RegisterLiteral(string name, string literalText) {
+            Pattern pattern = new Pattern(this, PatternType.Literal);
+            pattern.Name = name;
+            pattern.Literal = literalText;
+            Register(pattern);
+            return pattern;
+        }
+
         public Pattern Register(Pattern pattern) {
             if (pattern.Id == -1) pattern.Id = NextId++;
             Unregister(pattern);
@@ -32,12 +40,8 @@ namespace TokenDiscovery {
             return pattern;
         }
 
-        public Pattern RegisterLiteral(string name, string literalText) {
-            Pattern pattern = new Pattern(this, PatternType.Literal);
-            pattern.Name = name;
-            pattern.Literal = literalText;
-            Register(pattern);
-            return pattern;
+        public Pattern Register(string name, string patternText) {
+            return Register(name, PatternType.Experimental, patternText);
         }
 
         public Pattern Register(string name, PatternType patternType, string patternText) {
@@ -51,7 +55,7 @@ namespace TokenDiscovery {
         }
 
         private static Regex regexPatternToken = new(
-            @"^\s* (?<Token>( \( | \| | \[\d{1,9}\] | [A-Za-z]+[-_A-Za-z]* | '('' | [^'])+' | \) | \^ | \! | \? | \* | \+ | \{ \s* \d+ \s* (\- \s* \d+ | \+)? \s* \} ) \s* )+$",
+            @"^\s* (?<Token>( \( | \| | \[\d{1,9}\] | [A-Za-z]+[-_A-Za-z]* | '('' | [^'])+' | \) | \< | \> | \! | \? | \* | \+ | \{ \s* \d+ \s* (\- \s* \d+ | \+)? \s* \} ) \s* )+$",
             RegexOptions.IgnorePatternWhitespace
         );
 
@@ -70,7 +74,7 @@ namespace TokenDiscovery {
                 }
 
                 int startAt = 0;
-                pattern.Head = NewPattern_Part(tokens, ref startAt);
+                pattern.Root = NewPattern_Element(tokens, ref startAt);
 
                 if (startAt < tokens.Count) throw new Exception("Expecting end of pattern around '" + tokens[startAt] + "'");
             } catch (Exception ex) {
@@ -84,40 +88,46 @@ namespace TokenDiscovery {
             return pattern;
         }
 
-        private PatternPart NewPattern_Part(List<string> tokens, ref int startAt) {
-            var alts = new List<List<PatternPart>>();
-            string token;
-            PatternPart currentPart = null;
-            bool nonePrior = false;
+        private PatternElement NewPattern_Element(List<string> tokens, ref int startAt) {
+            var thisElem = new PatternElement(this);
+            var alts = thisElem.Alternatives = new List<List<PatternElement>>();
 
-            var currentAlt = new List<PatternPart>();
-            alts.Add(currentAlt);
+            string token;
+            PatternElement currentElem = null;
+            Look look = Look.Here;
+
+            var sequence = new List<PatternElement>();
+            alts.Add(sequence);
             while (startAt < tokens.Count) {
                 token = tokens[startAt];
                 switch (token[0]) {
                     case '|':
-                        if (nonePrior) throw new Exception("Found ^ before " + token);
-                        if (currentAlt.Count == 0) throw new Exception("Found empty alternative before '|'");
-                        currentPart = null;
-                        currentAlt = new List<PatternPart>();
-                        alts.Add(currentAlt);
+                        if (look != Look.Here) throw new Exception("Found " + (look == Look.Behind ? "<" : ">") + " before " + token);
+                        if (sequence.Count == 0) throw new Exception("Found empty sequence before '|'");
+                        currentElem = null;
+                        sequence = new List<PatternElement>();
+                        alts.Add(sequence);
                         startAt++;
                         break;
                     case '(':
                         startAt++;
-                        currentPart = NewPattern_Part(tokens, ref startAt);
-                        if (nonePrior) {
-                            currentPart.NonePrior = true;
-                            nonePrior = false;
-                        }
-                        currentAlt.Add(currentPart);
+                        currentElem = NewPattern_Element(tokens, ref startAt);
+                        currentElem.Look = look;
+                        look = Look.Here;
+                        sequence.Add(currentElem);
                         if (startAt >= tokens.Count) throw new Exception("Unexpected end of pattern");
                         if (tokens[startAt] != ")") throw new Exception("Expecting ')' instead of '" + tokens[startAt] + "'");
                         startAt++;
                         break;
 
-                    case '^':
-                        nonePrior = true;
+                    case '<':
+                        if (look != Look.Here) throw new Exception("Found " + (look == Look.Behind ? "<" : ">") + " before " + token);
+                        look = Look.Behind;
+                        startAt++;
+                        break;
+                    case '>':
+                        if (look != Look.Here) throw new Exception("Found " + (look == Look.Behind ? "<" : ">") + " before " + token);
+                        look = Look.Ahead;
                         startAt++;
                         break;
 
@@ -126,8 +136,8 @@ namespace TokenDiscovery {
                     case '*':
                     case '+':
                     case '{':
-                        if (nonePrior) throw new Exception("Found ^ before " + token);
-                        if (currentPart == null) {
+                        if (look != Look.Here) throw new Exception("Found " + (look == Look.Behind ? "<" : ">") + " before " + token);
+                        if (currentElem == null) {
                             if (startAt == 0) {
                                 throw new Exception("Found '" + token + "' quantifier at pattern start");
                             } else {
@@ -135,136 +145,106 @@ namespace TokenDiscovery {
                             }
                         }
 
-                        if (currentPart.Next != null) {
-                            var innerPart = new PatternPart(this);
-                            innerPart.Import(currentPart);
-                            currentPart.Clear();
-                            currentPart.Alternatives = new();
-                            currentPart.Alternatives.Add(innerPart);
-                        }
-
                         if (token == "!") {
-                            currentPart.MinQuantity = 0;
-                            currentPart.MaxQuantity = 0;
+                            currentElem.MinQuantity = 0;
+                            currentElem.MaxQuantity = 0;
                         } else if (token == "?") {
-                            currentPart.MinQuantity = 0;
+                            currentElem.MinQuantity = 0;
                         } else if (token == "*") {
-                            currentPart.MinQuantity = 0;
-                            currentPart.MaxQuantity = -1;  // Unlimited
+                            currentElem.MinQuantity = 0;
+                            currentElem.MaxQuantity = -1;  // Unlimited
                         } else if (token == "+") {
-                            currentPart.MinQuantity = 1;
-                            currentPart.MaxQuantity = -1;  // Unlimited
+                            currentElem.MinQuantity = 1;
+                            currentElem.MaxQuantity = -1;  // Unlimited
                         } else {
                             var strippedToken = token.Substring(1, token.Length - 2).Replace(" ", "");
                             if (strippedToken.Contains("-")) {
                                 var parts = strippedToken.Split("-");
-                                currentPart.MinQuantity = int.Parse(parts[0]);
-                                currentPart.MaxQuantity = int.Parse(parts[1]);
-                                if (currentPart.MinQuantity > currentPart.MaxQuantity) {
+                                currentElem.MinQuantity = int.Parse(parts[0]);
+                                currentElem.MaxQuantity = int.Parse(parts[1]);
+                                if (currentElem.MinQuantity > currentElem.MaxQuantity) {
                                     throw new Exception("Range quantifier cannot have max less than min: " + token);
                                 }
                             } else if (strippedToken.EndsWith("+")) {
-                                currentPart.MinQuantity = int.Parse(strippedToken.Substring(0, strippedToken.Length - 1));
-                                currentPart.MaxQuantity = -1;  // Unlimited
+                                currentElem.MinQuantity = int.Parse(strippedToken.Substring(0, strippedToken.Length - 1));
+                                currentElem.MaxQuantity = -1;  // Unlimited
                             } else {
-                                currentPart.MinQuantity = int.Parse(strippedToken);
-                                currentPart.MaxQuantity = currentPart.MinQuantity;
+                                currentElem.MinQuantity = int.Parse(strippedToken);
+                                currentElem.MaxQuantity = currentElem.MinQuantity;
                             }
                         }
-                        currentPart = null;
+                        currentElem = null;
                         startAt++;
                         break;
 
                     case ')':
-                        if (nonePrior) throw new Exception("Found ^ before " + token);
+                        if (look != Look.Here) throw new Exception("Found " + (look == Look.Behind ? "<" : ">") + " before " + token);
                         break;
                     case '[':
                         token = token.Substring(1, token.Length - 2).Replace("''", "'");
-                        currentPart = new PatternPart(this);
-                        if (nonePrior) {
-                            currentPart.NonePrior = true;
-                            nonePrior = false;
-                        }
+                        currentElem = new PatternElement(this);
+                        currentElem.Look = look;
+                        look = Look.Here;
                         int tokenId = int.Parse(token);
-                        if (!Patterns.TryGetValue(tokenId, out currentPart.Pattern)) {
+                        if (!Patterns.TryGetValue(tokenId, out currentElem.Pattern)) {
                             throw new Exception("No such pattern with ID = " + tokenId);
                         }
-                        currentAlt.Add(currentPart);
+                        sequence.Add(currentElem);
                         startAt++;
                         break;
                     default:
                         if (token[0] == '\'') {
                             token = token.Substring(1, token.Length - 2).Replace("''", "'");
                         }
-                        currentPart = new PatternPart(this);
-                        if (nonePrior) {
-                            currentPart.NonePrior = true;
-                            nonePrior = false;
-                        }
-                        if (!PatternsByName.TryGetValue(token, out currentPart.Pattern)) {
+                        currentElem = new PatternElement(this);
+                        currentElem.Look = look;
+                        look = Look.Here;
+                        if (!PatternsByName.TryGetValue(token, out currentElem.Pattern)) {
                             throw new Exception("No such pattern named '" + token + "'");
                         }
-                        currentAlt.Add(currentPart);
+                        sequence.Add(currentElem);
                         startAt++;
                         break;
                 }
                 if (startAt >= tokens.Count) break;
                 if (tokens[startAt] == ")") {
-                    if (currentAlt.Count == 0) throw new Exception("Found empty alternative before ')'");
+                    if (sequence.Count == 0) throw new Exception("Found empty sequence before ')'");
                     break;
                 }
             }
 
-            var thisPart = new PatternPart(this);
-            thisPart.Alternatives = new List<PatternPart>();
-            foreach (var alt in alts) {
-                var altPart = new PatternPart(this);
-                NewPattern_PartChain(altPart, alt, 0);
-                thisPart.Alternatives.Add(altPart);
-            }
-
-            return thisPart;
+            NewPattern_Reduce(thisElem);
+            return thisElem;
         }
 
-        private void NewPattern_PartChain(PatternPart thisPart, List<PatternPart> partList, int index) {
-            if (index >= partList.Count) return;
-            var candidate = partList[index];
-            if (candidate.Pattern != null && candidate.Next == null) {
-                thisPart.Import(candidate);
+        void NewPattern_Reduce(PatternElement elem) {
+            if (elem.Alternatives == null) return;
 
-            } else if (
-                (candidate.MinQuantity != 1 || candidate.MaxQuantity != 1) &&
-                candidate.Alternatives.Count == 1 &&
-                candidate.Alternatives[0].Pattern != null &&
-                candidate.Alternatives[0].Next == null &&
-                !candidate.Alternatives[0].NonePrior &&
-                candidate.Alternatives[0].MinQuantity == 1 &&
-                candidate.Alternatives[0].MaxQuantity == 1
-            ) {
-                var alt = candidate.Alternatives[0];
-                candidate.Pattern = alt.Pattern;
-                candidate.Alternatives = null;
-                thisPart.Import(candidate);
+            // Apply the associative property by reducing needless parentheses. Eg "A (B C)" to "A B C".
 
-            } else if (
-                candidate.Alternatives.Count == 1 &&
-                !candidate.NonePrior &&
-                candidate.MinQuantity == 1 &&
-                candidate.MaxQuantity == 1
-            ) {
-                var innerPart = candidate.Alternatives[0];
-                thisPart.Import(innerPart);
+            foreach (var alt in elem.Alternatives) {
 
-            } else {
-                thisPart.Alternatives = new List<PatternPart>();
-                thisPart.Alternatives.Add(candidate);
+                // Reduce each of my children
+                foreach (var childElem in alt) {
+                    NewPattern_Reduce(childElem);
+                }
 
+                // Reduce needless sub-sequences
+                for (int i = 0; i < alt.Count; i++) {
+                    var childElem = alt[i];
+                    if (
+                        childElem.Alternatives != null &&
+                        childElem.Alternatives.Count == 1 &&
+                        childElem.MinQuantity == 1 &&
+                        childElem.MaxQuantity == 1 &&
+                        childElem.Look == Look.Here
+                    ) {
+                        alt.InsertRange(i, childElem.Alternatives[0]);
+                        alt.Remove(childElem);
+                    }
+                }
             }
 
-            if (index + 1 < partList.Count) {
-                thisPart.Next = new PatternPart(this);
-                NewPattern_PartChain(thisPart.Next, partList, index + 1);
-            }
         }
 
         public void Unregister(Pattern pattern) {
