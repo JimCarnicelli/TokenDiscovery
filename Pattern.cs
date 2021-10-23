@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TokenDiscovery {
 
     public enum PatternType {
-        Trivial,
         Literal,
         Basics,
         Derived,
@@ -67,6 +64,13 @@ namespace TokenDiscovery {
             }
         }
 
+        public static string Unescape(string text) {
+            if (text[0] == '\'') {
+                return text.Substring(1, text.Length - 2).Replace("''", "'");
+            }
+            return text;
+        }
+
         public string ToString(bool useIdIfNameless) {
             if (Name != null || useIdIfNameless) {
                 return Identity;
@@ -77,6 +81,36 @@ namespace TokenDiscovery {
         public string Describe(bool useIds = false) {
             if (Literal != null) return "'" + Literal.Replace("'", "''") + "'";
             return Root.ToString(true, false, useIds);
+        }
+
+        public Token Match(TokenChain chain, int startAt) {
+            Token token = null;
+
+            // If it's already been found previously then don't bother trying again
+            if (chain.Heads[startAt].TryGetValue(Id, out token)) return token;
+
+            // Literals are simple string matches
+            if (Literal != null) {
+                var snippet = chain.Text.Substring(startAt, Literal.Length);
+                if (snippet != Literal) return null;
+                token = new Token();
+                token.Text = snippet;
+                token.StartAt = startAt;
+                token.Length = snippet.Length;
+
+            } else {
+                if (!Root.Match(chain, startAt, out int endAt)) return null;
+                token = new Token();
+                token.StartAt = startAt;
+                token.Length = endAt - startAt;
+                token.Text = chain.Text.Substring(startAt, token.Length);
+
+            }
+
+            token.Pattern = this;
+            chain.Heads[startAt][token.Pattern.Id] = token;
+            chain.Tails[startAt + token.Length - 1][token.Pattern.Id] = token;
+            return token;
         }
 
     }

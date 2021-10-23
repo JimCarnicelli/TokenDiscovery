@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace TokenDiscovery {
 
@@ -137,6 +135,110 @@ namespace TokenDiscovery {
             Look = from.Look;
             MinQuantity = from.MinQuantity;
             MaxQuantity = from.MaxQuantity;
+        }
+
+
+        #endregion
+
+        #region Parsing text
+
+
+        public bool Match(TokenChain chain, int startAt, out int endAt) {
+            int origStartAt = startAt;
+            endAt = startAt;
+
+            if (Look == Look.Behind) {
+
+                if (Pattern != null) {
+                    int seqEndAt = startAt - 1;
+                    if (seqEndAt < 0) {
+                        if (MaxQuantity == 0) return true;  // We didn't want to find this
+                        return false;  // We did want to find this
+                    }
+                    if (chain.Tails[seqEndAt].TryGetValue(Pattern.Id, out Token _)) {
+                        if (MaxQuantity == 0) return false;  // We didn't want to find this
+                        return true;  // We did want to find this
+                    }
+                    if (MaxQuantity == 0) return true;  // We didn't want to find this
+                    return false;  // We did want to find this
+
+                } else {
+                    foreach (var sequence in Alternatives) {
+                        int seqEndAt = startAt - 1;
+                        if (seqEndAt < 0) {
+                            if (MaxQuantity == 0) return true;  // We didn't want to find this
+                            return false;  // We did want to find this
+                        }
+                        bool allMatched = true;
+                        sequence.Reverse();  // We must reverse the sequence order because we're looking backward
+                        foreach (var elem in sequence) {
+                            if (seqEndAt < 0) {
+                                allMatched = false;
+                                break;  // Failed to match this alternative sequence
+                            }
+                            if (!chain.Tails[seqEndAt].TryGetValue(elem.Pattern.Id, out Token token)) {
+                                allMatched = false;
+                                break;  // Failed to match this alternative sequence
+                            }
+                            seqEndAt = token.StartAt - 1;
+                        }
+                        if (allMatched) {
+                            if (MaxQuantity == 0) return false;  // We didn't want to find this
+                            return true;  // We did want to find this
+                        }
+                    }
+                    if (MaxQuantity == 0) return true;  // We didn't want to find this
+                    return false;  // We did want to find this
+
+                }
+            }
+
+            int matchCount = 0;
+
+            while (
+                MaxQuantity == -1 ||
+                (MaxQuantity == 0 && matchCount < 1) ||
+                matchCount < MaxQuantity
+            ) {
+
+                if (Pattern != null) {
+                    var token = Pattern.Match(chain, startAt);
+                    if (token == null) break;
+                    endAt = startAt + token.Length;
+                    startAt = endAt;
+                    matchCount++;
+
+                } else {
+
+                    bool allMatched = true;
+                    foreach (var sequence in Alternatives) {
+                        allMatched = true;
+                        int seqStartAt = startAt;
+                        foreach (var elem in sequence) {
+                            if (!elem.Match(chain, seqStartAt, out endAt)) {
+                                allMatched = false;
+                                break;  // Failed to match this alternative sequence
+                            }
+                            seqStartAt = endAt;
+                        }
+                        if (allMatched) {
+                            matchCount++;
+                            startAt = seqStartAt;
+                            break;
+                        }
+                    }
+                    if (!allMatched) break;
+
+                }
+
+            }
+
+            if (MaxQuantity == 0 && matchCount > 0) return false;
+            if (matchCount >= MinQuantity) {
+                if (Look == Look.Ahead) endAt = origStartAt;
+                return true;
+            }
+            return false;
         }
 
 

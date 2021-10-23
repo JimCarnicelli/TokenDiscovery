@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -24,8 +25,9 @@ namespace TokenDiscovery {
 
         private int NextId = 0;
 
-        public Pattern RegisterLiteral(string name, string literalText) {
+        public Pattern RegisterLiteral(int id, string name, string literalText) {
             Pattern pattern = new Pattern(this, PatternType.Literal);
+            if (id != -1) pattern.Id = id;
             pattern.Name = name;
             pattern.Literal = literalText;
             Register(pattern);
@@ -33,6 +35,9 @@ namespace TokenDiscovery {
         }
 
         public Pattern Register(Pattern pattern) {
+            if (pattern.Name != null && PatternsByName.ContainsKey(pattern.Name)) {
+                throw new Exception("Already a pattern named '" + pattern.Name + "'");
+            }
             if (pattern.Id == -1) pattern.Id = NextId++;
             Unregister(pattern);
             Patterns[pattern.Id] = pattern;
@@ -220,6 +225,8 @@ namespace TokenDiscovery {
         void NewPattern_Reduce(PatternElement elem) {
             if (elem.Alternatives == null) return;
 
+            //TODO: Prevent complex look-behinds
+
             // Apply the associative property by reducing needless parentheses. Eg "A (B C)" to "A B C".
 
             foreach (var alt in elem.Alternatives) {
@@ -256,15 +263,11 @@ namespace TokenDiscovery {
         }
 
         public void RegisterBasics() {
-            string allChars = "";
 
             // Generate an entity for each of the supported visible ASCII characters
             for (int i = 32; i < 127; i++) {
                 string s = "" + (char)i;
-                RegisterLiteral(s, s);
-
-                if (i > 32) allChars += " | ";
-                allChars += PatternsByName[s].Identity;
+                RegisterLiteral(-1, s, s);
             }
 
             string uppers = "";
@@ -281,9 +284,63 @@ namespace TokenDiscovery {
             }
             Register("Uppercase", PatternType.Basics, uppers);
             Register("Lowercase", PatternType.Basics, lowers);
-            Register("Letters", PatternType.Basics, "Uppercase | Lowercase");
-            Register("All_chars", PatternType.Trivial, allChars);
+            Register("Letter", PatternType.Basics, "Uppercase | Lowercase");
+        }
 
+        public void LoadPatterns(string path) {
+            Patterns.Clear();
+            PatternsByName.Clear();
+
+            var lines = File.ReadAllLines(path);
+            for (int i = 1; i < lines.Length; i++) {
+                var parts = lines[i].Split(" | ", 4);
+                if (parts[2] == "Literal") {
+                    RegisterLiteral(
+                        int.Parse(parts[0]),
+                        Pattern.Unescape(parts[1]),
+                        Pattern.Unescape(parts[3])
+                    );
+                } else {
+                    var pattern = NewPattern(
+                        parts[1] == "" ? null : Pattern.Unescape(parts[1]),
+                        (PatternType)Enum.Parse(typeof(PatternType), parts[2]),
+                        parts[3]
+                    );
+                    pattern.Id = int.Parse(parts[0]);
+                    Register(pattern);
+                }
+            }
+        }
+
+        public void SavePatterns(string path) {
+            var lines = new List<string>();
+
+            lines.Add("Id | Name | Type | Pattern");
+            foreach (var pattern in Patterns.Values) {
+                lines.Add(pattern.Id + " | " + pattern.Identity + " | " + pattern.Type + " | " + pattern.Describe());
+            }
+
+            File.WriteAllLines(path, lines);
+        }
+
+
+        #endregion
+
+        #region Parsing text
+
+
+        public TokenChain Parse(string text) {
+            var chain = new TokenChain(text);
+            for (int i = 0; i < text.Length; i++) {
+                foreach (var pattern in Patterns.Values) {
+                    Parse(chain, i, pattern);
+                }
+            }
+            return chain;
+        }
+
+        public void Parse(TokenChain chain, int startAt, Pattern pattern) {
+            pattern.Match(chain, startAt);
         }
 
 

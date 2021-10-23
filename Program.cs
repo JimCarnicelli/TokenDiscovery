@@ -44,6 +44,8 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
         static void Main(string[] args) {
             Console.WriteLine("Starting");
 
+            string dataPath = @"G:\My Drive\Ventures\MsDev\TokenDiscovery\Data\";
+
             // Pre-parse the raw text into a set of paragraphs with some text cleanup
             var paragraphs = new List<string>();
             foreach (var rawParagraph in sourceText.Split("\r\n\r\n")) {
@@ -56,17 +58,35 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             var parser = new TokenParser();
             parser.RegisterBasics();
-            var x = parser.Register(null, "<(A a)! B >C!");
+            //parser.SavePatterns(dataPath + "Patterns.txt");
+            //parser.LoadPatterns(dataPath + "Patterns.txt");
 
+            parser.Register("Word", "<Letter! Letter+");
+            //parser.Register("Word", "Letter{6+}");
+
+            /*
             Console.WriteLine("Patterns:");
             foreach (var pattern in parser.Patterns.Values) {
                 if (pattern.Type < PatternType.Derived) continue;
                 Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe());
             }
+            Console.WriteLine();
+            */
 
             // Process each of the paragraphs
             foreach (var paragraph in paragraphs) {
-                //Console.WriteLine(paragraph + "\n");
+                Console.WriteLine(paragraph + "\n");
+
+                /*
+                var chain = new TokenChain(paragraph);
+                parser.PatternsByName["Letter"].Match(chain, 0);
+                parser.PatternsByName["Word"].Match(chain, 1);
+                */
+                var chain = parser.Parse(paragraph);
+
+                Console.WriteLine(chain.ToDebugString(PatternType.Derived, false));
+                Console.WriteLine();
+                break;
             }
 
             Console.WriteLine("Done");
