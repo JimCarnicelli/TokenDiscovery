@@ -16,6 +16,9 @@ namespace TokenDiscovery {
 
         #endregion
 
+        public TokenParser() {
+        }
+
         #region Construction and registration of patterns
 
 
@@ -30,21 +33,21 @@ namespace TokenDiscovery {
         }
 
         public Pattern RegisterLiteral(string name, string literalText) {
-            Pattern pattern = new Pattern(this);
+            Pattern pattern = new Pattern(this, PatternType.Literal);
             pattern.Name = name;
             pattern.Literal = literalText;
             Register(pattern);
             return pattern;
         }
 
-        public Pattern Register(string name, string patternText) {
-            var pattern = NewPattern(name, patternText);
+        public Pattern Register(string name, PatternType patternType, string patternText) {
+            var pattern = NewPattern(name, patternType, patternText);
             Register(pattern);
             return pattern;
         }
 
-        public Pattern NewPattern(string patternText) {
-            return NewPattern(null, patternText);
+        public Pattern NewPattern(PatternType patternType, string patternText) {
+            return NewPattern(null, patternType, patternText);
         }
 
         private static Regex regexPatternToken = new(
@@ -52,21 +55,31 @@ namespace TokenDiscovery {
             RegexOptions.IgnorePatternWhitespace
         );
 
-        public Pattern NewPattern(string name, string patternText) {
+        public Pattern NewPattern(string name, PatternType patternType, string patternText) {
             Pattern pattern = new Pattern(this);
             pattern.Name = name;
+            pattern.Type = patternType;
 
-            var matches = regexPatternToken.Matches(patternText);
-            if (matches.Count == 0) throw new Exception("Syntax error in pattern");
-            var tokens = new List<string>();
-            foreach (var match in matches[0].Groups["Token"].Captures) {
-                tokens.Add(match.ToString().Trim());
+            try {
+
+                var matches = regexPatternToken.Matches(patternText);
+                if (matches.Count == 0) throw new Exception("Syntax error in pattern");
+                var tokens = new List<string>();
+                foreach (var match in matches[0].Groups["Token"].Captures) {
+                    tokens.Add(match.ToString().Trim());
+                }
+
+                int startAt = 0;
+                pattern.Head = NewPattern_Part(tokens, ref startAt);
+
+                if (startAt < tokens.Count) throw new Exception("Expecting end of pattern around '" + tokens[startAt] + "'");
+            } catch (Exception ex) {
+                if (name != null) {
+                    throw new Exception("Error parsing '" + name + "' pattern: " + ex.Message, ex);
+                } else {
+                    throw new Exception("Error parsing nameless pattern: " + ex.Message, ex);
+                }
             }
-
-            int startAt = 0;
-            pattern.Head = NewPattern_Part(tokens, ref startAt);
-
-            if (startAt < tokens.Count) throw new Exception("Expecting end of pattern around '" + tokens[startAt] + "'");
 
             return pattern;
         }
@@ -84,6 +97,7 @@ namespace TokenDiscovery {
                 switch (token[0]) {
                     case '|':
                         if (nonePrior) throw new Exception("Found ^ before " + token);
+                        if (currentAlt.Count == 0) throw new Exception("Found empty alternative before '|'");
                         currentPart = null;
                         currentAlt = new List<PatternPart>();
                         alts.Add(currentAlt);
@@ -195,7 +209,10 @@ namespace TokenDiscovery {
                         break;
                 }
                 if (startAt >= tokens.Count) break;
-                if (tokens[startAt] == ")") break;
+                if (tokens[startAt] == ")") {
+                    if (currentAlt.Count == 0) throw new Exception("Found empty alternative before ')'");
+                    break;
+                }
             }
 
             var thisPart = new PatternPart(this);
@@ -256,6 +273,37 @@ namespace TokenDiscovery {
             if (keyValue.Key != null) {
                 PatternsByName.Remove(keyValue.Key);
             }
+        }
+
+        public void RegisterBasics() {
+            string allChars = "";
+
+            // Generate an entity for each of the supported visible ASCII characters
+            for (int i = 32; i < 127; i++) {
+                string s = "" + (char)i;
+                RegisterLiteral(s, s);
+
+                if (i > 32) allChars += " | ";
+                allChars += PatternsByName[s].Identity;
+            }
+
+            string uppers = "";
+            string lowers = "";
+            for (char c = 'A'; c <= 'Z'; c++) {
+                string S = "" + c;
+                string s = S.ToLower();
+                Register(S + s, PatternType.Basics, S + "|" + s);
+
+                if (uppers != "") uppers += "|";
+                uppers += S;
+                if (lowers != "") lowers += "|";
+                lowers += s;
+            }
+            Register("Uppercase", PatternType.Basics, uppers);
+            Register("Lowercase", PatternType.Basics, lowers);
+            Register("Letters", PatternType.Basics, "Uppercase | Lowercase");
+            Register("All_chars", PatternType.Trivial, allChars);
+
         }
 
 

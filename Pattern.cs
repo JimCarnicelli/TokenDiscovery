@@ -4,6 +4,24 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TokenDiscovery {
+
+    public enum PatternType {
+        Trivial,
+        Literal,
+        Basics,
+        Derived,
+        Experimental,
+    }
+
+    /// <summary>
+    /// One defined pattern that behaves similarly to a regular expression for matching text
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// See .Describe() and TokenParser.NewPattern() for more about the regex-like expression
+    /// language for representing patterns.
+    /// 
+    /// </remarks>
     public class Pattern {
 
         #region Public properties
@@ -15,6 +33,8 @@ namespace TokenDiscovery {
 
         public string Name;
 
+        public PatternType Type;
+
         public string Tag;
 
         public string Literal;
@@ -24,15 +44,16 @@ namespace TokenDiscovery {
 
         #endregion
 
-        public Pattern(TokenParser parser) {
+        public Pattern(TokenParser parser, PatternType patternType = PatternType.Experimental) {
             Parser = parser;
+            Type = patternType;
         }
-
-        private static Regex regexSafeName = new Regex("^[A-Za-z][-_A-Za-z0-9]*$");
 
         public override string ToString() {
             return ToString(false);
         }
+
+        private static Regex regexSafeName = new Regex("^[A-Za-z][-_A-Za-z0-9]*$");
 
         public string Identity {
             get {
