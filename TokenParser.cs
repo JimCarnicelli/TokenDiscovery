@@ -225,10 +225,7 @@ namespace TokenDiscovery {
         void NewPattern_Reduce(PatternElement elem) {
             if (elem.Alternatives == null) return;
 
-            //TODO: Prevent complex look-behinds
-
             // Apply the associative property by reducing needless parentheses. Eg "A (B C)" to "A B C".
-
             foreach (var alt in elem.Alternatives) {
 
                 // Reduce each of my children
@@ -252,6 +249,24 @@ namespace TokenDiscovery {
                 }
             }
 
+            if (elem.Look == Look.Behind) {
+                ConstraintLookBehind(elem);
+            }
+
+        }
+
+        private void ConstraintLookBehind(PatternElement elem) {
+            foreach (var alt in elem.Alternatives) {
+                foreach (var childElem in alt) {
+
+                    if (childElem.MinQuantity != 1) throw new Exception("Found quantifier within look-behind");
+                    if (childElem.MaxQuantity != 1) throw new Exception("Found custom quantifier within look-behind");
+                    if (childElem.Look == Look.Behind) throw new Exception("Found look-behind within look-behind");
+                    if (childElem.Look == Look.Ahead) throw new Exception("Found look-ahead within look-behind");
+
+                    NewPattern_Reduce(childElem);
+                }
+            }
         }
 
         public void Unregister(Pattern pattern) {

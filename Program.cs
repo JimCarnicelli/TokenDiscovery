@@ -61,9 +61,6 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
             //parser.SavePatterns(dataPath + "Patterns.txt");
             //parser.LoadPatterns(dataPath + "Patterns.txt");
 
-            parser.Register("Word", "<Letter! Letter+");
-            //parser.Register("Word", "Letter{6+}");
-
             /*
             Console.WriteLine("Patterns:");
             foreach (var pattern in parser.Patterns.Values) {
@@ -77,15 +74,10 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
             foreach (var paragraph in paragraphs) {
                 Console.WriteLine(paragraph + "\n");
 
-                /*
-                var chain = new TokenChain(paragraph);
-                parser.PatternsByName["Letter"].Match(chain, 0);
-                parser.PatternsByName["Word"].Match(chain, 1);
-                */
                 var chain = parser.Parse(paragraph);
-
                 Console.WriteLine(chain.ToDebugString(PatternType.Derived, false));
                 Console.WriteLine();
+
                 break;
             }
 
