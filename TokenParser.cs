@@ -45,14 +45,35 @@ namespace TokenDiscovery {
             return pattern;
         }
 
-        public Pattern Register(string name, string patternText) {
-            return Register(name, PatternType.Experimental, patternText);
-        }
-
         public Pattern Register(string name, PatternType patternType, string patternText) {
             var pattern = NewPattern(name, patternType, patternText);
             Register(pattern);
             return pattern;
+        }
+
+        public bool PatternExists(string patternText, out Pattern pattern) {
+            // Parse the text into a pattern and then render it back to text
+            var newPattern = NewPattern(patternText);
+            var newPatternDescription = newPattern.Describe(false, true);
+
+            if (newPattern.Describe() == "(Word Space)+ Word") {
+                var x = 1;
+            }
+
+            //Console.WriteLine("- " + patternText + "  ->  " + newPatternDescription);
+
+            // Check to see if this pattern already exists
+            pattern = Patterns.Values.Where(e => e.Describe(false, true) == newPatternDescription).FirstOrDefault();
+            if (pattern != null) return true;
+
+            // It doesn't. So we'll return the newly constructed pattern anyway.
+            pattern = newPattern;
+            return false;
+        }
+
+        public Pattern RegisterExperiment(string patternText) {
+            if (PatternExists(patternText, out Pattern pattern)) return pattern;
+            return Register(pattern);
         }
 
         public Pattern NewPattern(PatternType patternType, string patternText) {
@@ -63,6 +84,10 @@ namespace TokenDiscovery {
             @"^\s* (?<Token>( \( | \| | \[\d{1,9}\] | [A-Za-z]+[-_A-Za-z]* | '('' | [^'])+' | \) | \< | \> | \! | \? | \* | \+ | \{ \s* \d+ \s* (\- \s* \d+ | \+)? \s* \} ) \s* )+$",
             RegexOptions.IgnorePatternWhitespace
         );
+
+        public Pattern NewPattern(string patternText) {
+            return NewPattern(null, PatternType.Experimental, patternText);
+        }
 
         public Pattern NewPattern(string name, PatternType patternType, string patternText) {
             Pattern pattern = new Pattern(this);
@@ -281,8 +306,13 @@ namespace TokenDiscovery {
 
             // Generate an entity for each of the supported visible ASCII characters
             for (int i = 32; i < 127; i++) {
-                string s = "" + (char)i;
-                RegisterLiteral(-1, s, s);
+                if (i == 32) {
+                    string s = "" + (char)i;
+                    RegisterLiteral(-1, "Space", s);
+                } else {
+                    string s = "" + (char)i;
+                    RegisterLiteral(-1, s, s);
+                }
             }
 
             string uppers = "";
@@ -332,7 +362,12 @@ namespace TokenDiscovery {
 
             lines.Add("Id | Name | Type | Pattern");
             foreach (var pattern in Patterns.Values) {
-                lines.Add(pattern.Id + " | " + pattern.Identity + " | " + pattern.Type + " | " + pattern.Describe());
+                lines.Add(
+                    pattern.Id + " | " +
+                    (pattern.Name == null ? "" : pattern.Identity) + " | " +
+                    pattern.Type + " | " +
+                    pattern.Describe()
+                );
             }
 
             File.WriteAllLines(path, lines);
@@ -356,6 +391,230 @@ namespace TokenDiscovery {
 
         public void Parse(TokenChain chain, int startAt, Pattern pattern) {
             pattern.Match(chain, startAt);
+        }
+
+
+        #endregion
+
+        #region Experiment-based pattern learning
+
+
+        private Dictionary<string, List<string>> SurveySequences = new();
+
+        private Dictionary<string, bool> OldSurveySequences = new();
+
+        /// <summary>
+        /// Clears the survey-generated statistics in preparation for starting fresh
+        /// </summary>
+        public void ClearSurvey() {
+            foreach (var pattern in Patterns.Values) {
+                pattern.SurveyMatchCount = 0;
+                pattern.SurveyLongest = 0;
+                pattern.SurveyCoverage = 0;
+                pattern.SurveyStretch = 0;
+                SurveySequences.Clear();
+            }
+        }
+
+        public void ClearAllSurveys() {
+            ClearSurvey();
+            foreach (var pattern in Patterns.Values) {
+                pattern.SurveyExamples = null;
+            }
+            OldSurveySequences.Clear();
+        }
+
+        /// <summary>
+        /// Collect some usage statistics about the patterns found in the given token chain created by parsing
+        /// </summary>
+        public void Survey(TokenChain chain) {
+            var coverages = new Dictionary<Pattern, List<int>>();
+
+            for (int i = 0; i < chain.Length; i++) {
+                foreach (var token in chain.Heads[i].Values) {
+                    var pattern = token.Pattern;
+
+                    if (i == 0) {
+                        pattern.SurveyStretch += token.Length;
+                    }
+
+                    // Collect examples
+                    if (pattern.SurveyExamples == null) pattern.SurveyExamples = new();
+                    if (!pattern.SurveyExamples.Where(e => e == token.Text).Any()) {
+                        pattern.SurveyExamples.Add(token.Text);
+                    }
+
+                    // Count the number of matches
+                    pattern.SurveyMatchCount++;
+
+                    // Find the longest example
+                    if (token.Length > pattern.SurveyLongest) pattern.SurveyLongest = token.Length;
+
+                    // Count how many of the total characters are covered by these matches
+                    if (!coverages.TryGetValue(pattern, out List<int> patternCoverage)) {
+                        patternCoverage = new List<int>();
+                        coverages[pattern] = patternCoverage;
+                    }
+                    for (int j = token.StartAt; j < token.StartAt + token.Length; j++) {
+                        if (!patternCoverage.Contains(j)) patternCoverage.Add(j);
+                    }
+                }
+            }
+
+            foreach (var pattern in coverages.Keys) {
+                pattern.SurveyCoverage += coverages[pattern].Count;
+            }
+
+            for (int i = 0; i < chain.Length - 1; i++) {
+                foreach (var firstToken in chain.Heads[i].Values) {
+                    int secondStartAt = firstToken.StartAt + firstToken.Length;
+                    if (secondStartAt >= chain.Length) continue;
+                    foreach (var secondToken in chain.Heads[secondStartAt].Values) {
+                        string firstSecondKey = firstToken.Pattern.Id + "|" + secondToken.Pattern.Id;
+                        // Don't waste time with old observations
+                        if (!OldSurveySequences.ContainsKey(firstSecondKey)) {
+                            if (!SurveySequences.TryGetValue(firstSecondKey, out List<string> firstSecondExamples)) {
+                                firstSecondExamples = new List<string>();
+                                SurveySequences[firstSecondKey] = firstSecondExamples;
+                            }
+                            firstSecondExamples.Add(firstToken.Text + secondToken.Text);
+                        }
+
+                        /*
+                        int thirdStartAt = secondToken.StartAt + secondToken.Length;
+                        if (thirdStartAt >= chain.Length) continue;
+                        foreach (var thirdToken in chain.Heads[thirdStartAt].Values) {
+                            string firstSecondThirdKey = firstSecondKey + "|" + thirdToken.Pattern.Id;
+                            // Don't waste time with old observations
+                            if (!OldSurveySequences.ContainsKey(firstSecondThirdKey)) {
+                                if (!SurveySequences.TryGetValue(firstSecondThirdKey, out List<string> firstSecondThirdExamples)) {
+                                    firstSecondThirdExamples = new List<string>();
+                                    SurveySequences[firstSecondThirdKey] = firstSecondThirdExamples;
+                                }
+                                firstSecondThirdExamples.Add(firstToken.Text + secondToken.Text + thirdToken.Text);
+                            }
+                        }
+                        */
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debugging-oriented output of some survey results
+        /// </summary>
+        public void SurveyResults() {
+            var sortedList = Patterns.Values
+                .Where(e => e.Type >= PatternType.Basics && e.SurveyMatchCount > 0)
+                .OrderByDescending(e => e.SurveyStretch)
+                .Take(200);
+            foreach (var pattern in sortedList) {
+                Console.WriteLine(
+                    "- " + pattern.SurveyStretch.ToString("#,##0") +
+                    " - [" + pattern.Id + "]" +
+                    " - " + pattern
+                );
+                var examples = pattern.SurveyExamples
+                    .OrderByDescending(e => e.Length)
+                    .Take(3);
+                foreach (string example in examples) {
+                    Console.WriteLine("  | '" + example + "'");
+                }
+            }
+        }
+
+        public void CullExperiments() {
+            return;
+            var sortedPatterns = Patterns.Values
+                .Where(e => e.Type == PatternType.Experimental && e.SurveyMatchCount > 0)
+                .OrderByDescending(e => e.SurveyCoverage - e.Penalty)
+                .Skip(30)  // We'll keep the current best
+                .ToList();
+            //Console.WriteLine("Culling " + sortedPatterns.Count() + " unproductive patterns\n");
+            foreach (var pattern in sortedPatterns) {
+                // Don't delete this one if anyone else depends on it
+                if (Patterns.Values.Where(e => e.DependsOn(pattern)).Any()) continue;
+                Unregister(pattern);
+            }
+        }
+
+        public void ProposePatterns() {
+
+            // Pairs ("A B")
+            {
+                var sortedSequences = SurveySequences
+                    .Where(e => e.Key.Split('|').Length == 2 && e.Value.Count > 3)
+                    .OrderByDescending(e => e.Value.Count)
+                    .Take(50);
+                foreach (var keyValue in sortedSequences) {
+                    var parts = keyValue.Key.Split('|');
+                    var examples = keyValue.Value;
+                    var firstPattern = Patterns[int.Parse(parts[0])];
+                    var secondPattern = Patterns[int.Parse(parts[1])];
+
+                    // "A A"
+                    if (parts[0] == parts[1]) {
+                        RegisterExperiment("[" + firstPattern.Id + "]+");
+                    } else {  // "A B"
+                        var pattern = RegisterExperiment("[" + firstPattern.Id + "] [" + secondPattern.Id + "]");
+                    }
+
+                    /*
+                    Console.WriteLine("- (2) " + firstPattern.Identity + " " + secondPattern.Identity + ": " + examples.Count);
+                    var sortedExamples = examples
+                        .OrderByDescending(e => e.Length)
+                        .Take(3);
+                    foreach (string example in sortedExamples) {
+                        Console.WriteLine("  | " + example);
+                    }
+                    */
+
+                    // Discard these sequences we discovered in this round so we don't waste time on them in later iterations
+                    OldSurveySequences[keyValue.Key] = true;
+
+                }
+            }
+
+            // Triples ("A B C")
+            if (false) {
+                var sortedSequences = SurveySequences
+                    .Where(e => e.Key.Split('|').Length == 3)
+                    .OrderByDescending(e => e.Value.Count)
+                    .Take(20);
+                foreach (var keyValue in sortedSequences) {
+                    var parts = keyValue.Key.Split('|');
+                    var examples = keyValue.Value;
+                    var firstPattern = Patterns[int.Parse(parts[0])];
+                    var secondPattern = Patterns[int.Parse(parts[1])];
+                    var thirdPattern = Patterns[int.Parse(parts[2])];
+
+                    // "A B B" type pattern
+                    if (parts[0] != parts[1] && parts[1] == parts[2]) {
+                        RegisterExperiment("[" + firstPattern.Id + "] [" + thirdPattern.Id + "]+");
+                        RegisterExperiment("<[" + secondPattern.Id + "]! [" + thirdPattern.Id + "]+");
+                    }
+
+                    // "A A B" type pattern
+                    if (parts[0] == parts[1] && parts[1] != parts[2]) {
+                        RegisterExperiment("[" + firstPattern.Id + "]+ [" + thirdPattern.Id + "]");
+                        RegisterExperiment("[" + firstPattern.Id + "]+ >[" + thirdPattern.Id + "]!");
+                    }
+
+                    /*
+                    Console.WriteLine("- (3) " + firstPattern.Identity + " " + secondPattern.Identity + " " + thirdPattern.Identity + ": " + examples.Count);
+                    var sortedExamples = examples
+                        .OrderByDescending(e => e.Length)
+                        .Take(3);
+                    foreach (string example in sortedExamples) {
+                        Console.WriteLine("  | " + example);
+                    }
+                    */
+
+                    // Discard these sequences we discovered in this round so we don't waste time on them in later iterations
+                    OldSurveySequences[keyValue.Key] = true;
+                }
+            }
+
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace TokenDiscovery {
@@ -32,11 +33,46 @@ namespace TokenDiscovery {
 
         public PatternType Type;
 
-        public string Tag;
-
         public string Literal;
 
         public PatternElement Root;
+
+        public int Penalty {
+            get {
+                // Already calculated and cached?
+                if (penalty <= 0) {  // Not yet
+                    if (Type == PatternType.Literal) {
+                        penalty = 1;
+                    } else {
+                        penalty = Root.CalculatePenalty();
+                    }
+                }
+                return penalty;
+            }
+        }
+        private int penalty = 0;
+
+        /// <summary>
+        /// How many matches were found in the token chains surveyed
+        /// </summary>
+        public int SurveyMatchCount;
+
+        /// <summary>
+        /// The longest single match found in the token chains surveyed
+        /// </summary>
+        public int SurveyLongest;
+
+        /// <summary>
+        /// The total number of characters covered by matches in the token chains surveyed
+        /// </summary>
+        public int SurveyCoverage;
+
+        /// <summary>
+        /// Sum of the longest continuous stretches in token chains surveyed starting from the first character
+        /// </summary>
+        public int SurveyStretch;
+
+        public List<string> SurveyExamples;
 
 
         #endregion
@@ -47,7 +83,12 @@ namespace TokenDiscovery {
         }
 
         public override string ToString() {
-            return ToString(false);
+            return ToString(false, false);
+        }
+
+        public string ToDebugString(string indent = "") {
+            if (Literal != null) return "Literal: '" + Literal.Replace("'", "''") + "'";
+            return Identity + " " + Root.ToDebugString(indent);
         }
 
         private static Regex regexSafeName = new Regex("^[A-Za-z][-_A-Za-z0-9]*$");
@@ -71,20 +112,45 @@ namespace TokenDiscovery {
             return text;
         }
 
-        public string ToString(bool useIdIfNameless) {
-            if (Name != null || useIdIfNameless) {
-                return Identity;
+        public string ToString(bool useIdIfNameless, bool fullDepth) {
+            if (!fullDepth) {
+                if (Name != null || useIdIfNameless) {
+                    return Identity;
+                }
             }
-            return Describe(false);
+            return Describe(false, fullDepth);
         }
 
-        public string Describe(bool useIds = false) {
+        public string Describe(bool useIds = false, bool fullDepth = false) {
+            if (!useIds && fullDepth) {  // We'll cache these
+                if (fullDepthDescription != null) return fullDepthDescription;
+                if (Literal != null) {
+                    fullDepthDescription = Identity;
+                } else {
+                    fullDepthDescription = Root.ToString(useIds, fullDepth);
+                }
+                return fullDepthDescription;
+            }
             if (Literal != null) return "'" + Literal.Replace("'", "''") + "'";
-            return Root.ToString(true, false, useIds);
+            return Root.ToString(useIds, fullDepth);
+        }
+
+        private string fullDepthDescription;
+
+        /// <summary>
+        /// Determine if I directly rely on the existence of the given pattern
+        /// </summary>
+        public bool DependsOn(Pattern otherPattern) {
+            if (this == otherPattern) return false;
+            if (Literal != null) return false;
+            return Root.DependsOn(otherPattern);
         }
 
         public Token Match(TokenChain chain, int startAt) {
             Token token = null;
+
+            if (startAt < 0) return null;
+            if (startAt >= chain.Length) return null;
 
             // If it's already been found previously then don't bother trying again
             if (chain.Heads[startAt].TryGetValue(Id, out token)) return token;

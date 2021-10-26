@@ -66,16 +66,34 @@ namespace TokenDiscovery {
 
 
         public override string ToString() {
-            return ToString(true, false, false);
+            return ToString(false, false);
         }
 
-        public string ToString(bool topLevel, bool forceParentheses, bool useIdsForNameless) {
+        public string ToString(bool useIdsForNameless, bool fullDepth) {
             string text = "";
 
             if (Pattern != null) {
-                text += Pattern.ToString(useIdsForNameless);
-                if (Pattern.Name == null && !useIdsForNameless && text[0] != '(') {
-                    text += "(" + text + ")";
+                text += Pattern.ToString(useIdsForNameless, fullDepth);
+                if (fullDepth) {
+                    if (
+                        text.Contains(" ") && text[0] != '(' &&
+                        (
+                            MinQuantity != 1 || MaxQuantity != 1 || Look != Look.Here
+                        )
+                    ) {
+                        text = "(" + text + ")";
+                    }
+                } else {
+                    // Note: The text.Contains(" ") bit is a hack that would (gracefully-ish) fail when names contain spaces
+                    if (
+                        (Pattern.Name == null && !useIdsForNameless) &&
+                        text.Contains(" ") && text[0] != '(' &&
+                        (
+                            MinQuantity != 1 || MaxQuantity != 1 || Look != Look.Here
+                        )
+                    ) {
+                        text = "(" + text + ")";
+                    }
                 }
 
             } else {  // Alternatives
@@ -83,14 +101,35 @@ namespace TokenDiscovery {
                     if (i > 0) text += " | ";
                     var alt = Alternatives[i];
                     for (int j = 0; j < alt.Count; j++) {
+
+                        var subText = alt[j].ToString(useIdsForNameless, fullDepth);
+                        if (
+                            subText.Contains(" ") && subText[0] != '(' &&
+                            (
+                                MinQuantity != 1 || MaxQuantity != 1 || Look != Look.Here
+                            )
+                        ) {
+                            subText = "(" + subText + ")";
+                        }
+
                         if (j > 0) text += " ";
-                        text += alt[j].ToString(false, false, useIdsForNameless);
+                        text += subText;
                     }
                 }
 
-                if (!topLevel && (Alternatives.Count > 1 || Alternatives[0].Count > 1 || MaxQuantity != 1)) {
+                if (
+                    (
+                        Alternatives.Count > 1 ||
+                        Alternatives[0].Count > 1
+                    ) && (
+                        MinQuantity != 1 ||
+                        MaxQuantity != 1 ||
+                        Look != Look.Here
+                    )
+                ) {
                     text = "(" + text + ")";
                 }
+
             }
 
             if (Look == Look.Behind) text = "<" + text;
@@ -112,8 +151,66 @@ namespace TokenDiscovery {
                 text += "{" + MinQuantity + "-" + MaxQuantity + "}";
             }
 
-            if (forceParentheses && text[0] != '(') text = "( " + text + " )";
             return text;
+        }
+
+        public string ToDebugString(string indent) {
+            string text = "{\n";
+
+            if (MinQuantity != 1) text += indent + "  MinQuantity: " + MinQuantity + "\n";
+            if (MaxQuantity != 1) text += indent + "  MaxQuantity: " + (MaxQuantity == -1 ? "Unlimited" : MaxQuantity) + "\n";
+            if (Look != Look.Here) text += indent + "  Look: " + Look + "\n";
+
+            if (Pattern != null) {
+                text += indent + "  Pattern: " + Pattern.Identity;
+                if (Pattern.Name == null) {
+                    text += " ( " + Pattern.Describe() + " )";
+                }
+                text += "\n";
+
+            } else {
+                text += indent + "  Alternatives: [\n";
+                for (int i = 0; i < Alternatives.Count; i++) {
+                    if (i > 0) text += "  ----------\n";
+                    foreach (var subPattern in Alternatives[i]) {
+                        text += indent + "    " + subPattern.ToDebugString(indent + "    ");
+                    }
+                }
+                text += indent + "  ]\n";
+            }
+
+            text += indent + "}\n";
+            return text;
+        }
+
+        public bool DependsOn(Pattern otherPattern) {
+            if (Pattern == otherPattern) return true;
+            foreach (var sequence in Alternatives) {
+                foreach (var elem in sequence) {
+                    if (elem.Pattern == otherPattern) return true;
+                }
+            }
+            return false;
+        }
+
+        public int CalculatePenalty() {
+            int penalty = 1;
+            if (Look != Look.Here) penalty += 2;
+            if (Pattern != null) {
+                penalty += Pattern.Penalty;
+            } else {
+                //if (Alternatives.Count > 1) penalty++;
+                int maxPenalty = 0;
+                foreach (var sequence in Alternatives) {
+                    int subPenalty = 0;
+                    foreach (var elem in sequence) {
+                        subPenalty += elem.CalculatePenalty();
+                    }
+                    if (subPenalty > maxPenalty) maxPenalty = subPenalty;
+                }
+                penalty += maxPenalty;
+            }
+            return penalty;
         }
 
 

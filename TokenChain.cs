@@ -41,7 +41,9 @@ namespace TokenDiscovery {
                 var subText = "";
                 foreach (var token in Heads[i].Values) {
                     if (token.Pattern.Type < minType) continue;
-                    subText += "  " + token.Pattern.Identity + ": " + token.Text + "\n";
+                    subText += "  " + token.Pattern.Identity + ": " + token.Text;
+                    if (token.Pattern.Name == null) subText += "  | " + token.Pattern.ToString();
+                    subText += "\n";
                 }
                 if (subText != "" || includeEmpty) {
                     text += "----------  " + i + "  -  " + Text[i] + "  ----------\n" + subText;

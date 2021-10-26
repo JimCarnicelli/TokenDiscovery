@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace TokenDiscovery {
     class Program {
@@ -42,9 +44,7 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 ";
 
         static void Main(string[] args) {
-            Console.WriteLine("Starting");
-
-            string dataPath = @"G:\My Drive\Ventures\MsDev\TokenDiscovery\Data\";
+            Console.WriteLine("Starting\n");
 
             // Pre-parse the raw text into a set of paragraphs with some text cleanup
             var paragraphs = new List<string>();
@@ -58,28 +58,89 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             var parser = new TokenParser();
             parser.RegisterBasics();
+            parser.Register("Word", PatternType.Derived, "Letter+");
+            parser.Register("Phrase", PatternType.Derived, "(Word Space)+ Word");
+            //parser.RegisterExperiment("(Word Space)+");
+
+            string dataPath = @"G:\My Drive\Ventures\MsDev\TokenDiscovery\Data\";
             //parser.SavePatterns(dataPath + "Patterns.txt");
             //parser.LoadPatterns(dataPath + "Patterns.txt");
 
             /*
-            Console.WriteLine("Patterns:");
+            Console.WriteLine("#################### Patterns ####################");
             foreach (var pattern in parser.Patterns.Values) {
                 if (pattern.Type < PatternType.Derived) continue;
-                Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe());
+                Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe(false, true));
             }
             Console.WriteLine();
             */
 
-            // Process each of the paragraphs
-            foreach (var paragraph in paragraphs) {
-                Console.WriteLine(paragraph + "\n");
+            const int iterations = 6;
 
-                var chain = parser.Parse(paragraph);
-                Console.WriteLine(chain.ToDebugString(PatternType.Derived, false));
+            for (int i = 1; i <= iterations; i++) {
+
+                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Iteration " + i + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+
+                parser.ClearSurvey();
+
+                // Process each of the paragraphs
+                foreach (var paragraph in paragraphs) {
+                    //Console.WriteLine(paragraph + "\n");
+
+                    var chain = parser.Parse(paragraph);
+                    // Console.WriteLine(chain.ToDebugString(PatternType.Derived, false)); Console.WriteLine();
+
+                    parser.Survey(chain);
+                }
+
+                /*
+                Console.WriteLine("#################### Survey results ####################");
+                parser.SurveyResults();
                 Console.WriteLine();
+                */
 
-                break;
+                if (i < iterations) {
+                    //Console.WriteLine("#################### Propose patterns ####################");
+                    parser.ProposePatterns();
+                    //Console.WriteLine();
+                }
+
+                parser.CullExperiments();
+
+                Console.WriteLine("#################### Patterns ####################");
+                var sortedPatterns = parser.Patterns.Values
+                    .OrderByDescending(e => e.SurveyStretch - e.Penalty);
+                foreach (var pattern in sortedPatterns) {
+                    if (pattern.Type < PatternType.Experimental) continue;
+                    Console.WriteLine(
+                        pattern.Identity + " - " +
+                        (pattern.SurveyStretch - pattern.Penalty) + " = (" + pattern.SurveyStretch + "-" + pattern.Penalty + ") - " +
+                        pattern.Describe()
+                    );
+                    if (pattern.SurveyExamples != null) {
+                        var sortedExamples = pattern.SurveyExamples
+                            .OrderByDescending(e => e.Length)
+                            .Take(3)
+                            .ToList();
+                        foreach (string example in sortedExamples) {
+                            Console.WriteLine("  | " + example);
+                        }
+                    }
+                }
+                Console.WriteLine();
             }
+
+            File.WriteAllText(dataPath + "TokenChain.txt",
+                paragraphs[3] + "\n\n" +
+                parser.Parse(paragraphs[0]).ToDebugString(PatternType.Derived, false)
+            );
+
+            parser.SavePatterns(dataPath + "Patterns.txt");
+
+            //Console.Write(parser.Patterns[142].ToDebugString());
+            //Console.WriteLine(parser.Patterns[142].Describe());
+
+            parser.ClearAllSurveys();
 
             Console.WriteLine("Done");
             Console.ReadLine();
