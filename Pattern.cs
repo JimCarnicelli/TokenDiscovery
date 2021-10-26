@@ -83,7 +83,16 @@ namespace TokenDiscovery {
         }
 
         public override string ToString() {
-            return ToString(false, false);
+            return ToString(false, false, true);
+        }
+
+        public string ToString(bool useIdIfNameless, bool fullDepth, bool topLevel) {
+            if (!fullDepth) {
+                if (Name != null || useIdIfNameless) {
+                    return Identity;
+                }
+            }
+            return Describe(false, fullDepth, topLevel);
         }
 
         public string ToDebugString(string indent = "") {
@@ -112,27 +121,23 @@ namespace TokenDiscovery {
             return text;
         }
 
-        public string ToString(bool useIdIfNameless, bool fullDepth) {
-            if (!fullDepth) {
-                if (Name != null || useIdIfNameless) {
-                    return Identity;
-                }
-            }
-            return Describe(false, fullDepth);
-        }
-
-        public string Describe(bool useIds = false, bool fullDepth = false) {
+        public string Describe(bool useIds = false, bool fullDepth = false, bool topLevel = true) {
+            string text;
             if (!useIds && fullDepth) {  // We'll cache these
                 if (fullDepthDescription != null) return fullDepthDescription;
+
                 if (Literal != null) {
-                    fullDepthDescription = Identity;
+                    text = Identity;
                 } else {
-                    fullDepthDescription = Root.ToString(useIds, fullDepth);
+                    text = Root.ToString(useIds, fullDepth, topLevel);
                 }
-                return fullDepthDescription;
+                fullDepthDescription = text;
+            } else if (Literal != null) {
+                text = "'" + Literal.Replace("'", "''") + "'";
+            } else {
+                text = Root.ToString(useIds, fullDepth, topLevel);
             }
-            if (Literal != null) return "'" + Literal.Replace("'", "''") + "'";
-            return Root.ToString(useIds, fullDepth);
+            return text;
         }
 
         private string fullDepthDescription;
@@ -147,7 +152,7 @@ namespace TokenDiscovery {
         }
 
         public Token Match(TokenChain chain, int startAt) {
-            Token token = null;
+            Token token;
 
             if (startAt < 0) return null;
             if (startAt >= chain.Length) return null;
@@ -175,7 +180,9 @@ namespace TokenDiscovery {
 
             token.Pattern = this;
             chain.Heads[startAt][token.Pattern.Id] = token;
-            chain.Tails[startAt + token.Length - 1][token.Pattern.Id] = token;
+            if (startAt + token.Length - 1 > 0) {
+                chain.Tails[startAt + token.Length - 1][token.Pattern.Id] = token;
+            }
             return token;
         }
 

@@ -58,8 +58,19 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
             var parser = new TokenParser();
             parser.RegisterBasics();
-            parser.Register("Word", PatternType.Derived, "Letter+");
-            parser.Register("Phrase", PatternType.Derived, "(Word Space)+ Word");
+            //parser.Register("Word", PatternType.Derived, "<Letter! Letter+");
+            //parser.Register("Phrase", PatternType.Derived, "(Word Space)+ Word");
+            //parser.RegisterExperiment("(Word (Space Letter)) ((Word Space)+)");
+            //parser.Register(null, PatternType.Experimental, "(Aa+ Cc)* | (D E)?");
+            //parser.Register(null, PatternType.Experimental, "Lowercase+ | Uppercase+");
+
+            /*
+            Console.WriteLine(parser.Patterns[126].Describe());
+            Console.WriteLine(parser.Patterns[126].Describe(false, true));
+            Console.WriteLine(parser.Patterns[126].ToDebugString());
+            Console.ReadLine();
+            */
+
             //parser.RegisterExperiment("(Word Space)+");
 
             string dataPath = @"G:\My Drive\Ventures\MsDev\TokenDiscovery\Data\";
@@ -69,10 +80,12 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
             /*
             Console.WriteLine("#################### Patterns ####################");
             foreach (var pattern in parser.Patterns.Values) {
-                if (pattern.Type < PatternType.Derived) continue;
-                Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe(false, true));
+                //if (pattern.Type < PatternType.Derived) continue;
+                Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe());
+                //Console.WriteLine("- " + pattern.Identity + ": " + pattern.Describe(false, true));
             }
             Console.WriteLine();
+            Console.ReadLine();
             */
 
             const int iterations = 6;
@@ -90,8 +103,13 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                     var chain = parser.Parse(paragraph);
                     // Console.WriteLine(chain.ToDebugString(PatternType.Derived, false)); Console.WriteLine();
 
-                    parser.Survey(chain);
+                    parser.Survey(chain, i);
                 }
+
+                File.WriteAllText(dataPath + "TokenChain.txt",
+                    paragraphs[3] + "\n\n" +
+                    parser.Parse(paragraphs[0]).ToDebugString(PatternType.Derived, false)
+                );
 
                 /*
                 Console.WriteLine("#################### Survey results ####################");
@@ -103,6 +121,26 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                     //Console.WriteLine("#################### Propose patterns ####################");
                     parser.ProposePatterns();
                     //Console.WriteLine();
+                }
+
+                // Name certain expected patterns
+                var patterns = parser.Patterns.Values
+                    .Where(e => e.Name == null)
+                    .ToList();
+                foreach (var pattern in patterns) {
+                    if (pattern.Name != null) continue;
+                    var description = pattern.Describe();
+
+                    switch (description) {
+                        case "Letter+":
+                            pattern.Name = "Word";
+                            parser.Register(pattern);
+                            break;
+                        case "(Word Space)+ Word":
+                            pattern.Name = "Phrase";
+                            parser.Register(pattern);
+                            break;
+                    }
                 }
 
                 parser.CullExperiments();

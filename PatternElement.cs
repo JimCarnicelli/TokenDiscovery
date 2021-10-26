@@ -66,34 +66,16 @@ namespace TokenDiscovery {
 
 
         public override string ToString() {
-            return ToString(false, false);
+            return ToString(false, false, true);
         }
 
-        public string ToString(bool useIdsForNameless, bool fullDepth) {
+        public string ToString(bool useIdsForNameless, bool fullDepth, bool topLevel) {
             string text = "";
 
             if (Pattern != null) {
-                text += Pattern.ToString(useIdsForNameless, fullDepth);
-                if (fullDepth) {
-                    if (
-                        text.Contains(" ") && text[0] != '(' &&
-                        (
-                            MinQuantity != 1 || MaxQuantity != 1 || Look != Look.Here
-                        )
-                    ) {
-                        text = "(" + text + ")";
-                    }
-                } else {
-                    // Note: The text.Contains(" ") bit is a hack that would (gracefully-ish) fail when names contain spaces
-                    if (
-                        (Pattern.Name == null && !useIdsForNameless) &&
-                        text.Contains(" ") && text[0] != '(' &&
-                        (
-                            MinQuantity != 1 || MaxQuantity != 1 || Look != Look.Here
-                        )
-                    ) {
-                        text = "(" + text + ")";
-                    }
+                text += Pattern.ToString(useIdsForNameless, fullDepth, false);
+                if (!topLevel && (text.Contains(' ') || text.Contains('|'))) {
+                    text = "(" + text + ")";
                 }
 
             } else {  // Alternatives
@@ -101,17 +83,7 @@ namespace TokenDiscovery {
                     if (i > 0) text += " | ";
                     var alt = Alternatives[i];
                     for (int j = 0; j < alt.Count; j++) {
-
-                        var subText = alt[j].ToString(useIdsForNameless, fullDepth);
-                        if (
-                            subText.Contains(" ") && subText[0] != '(' &&
-                            (
-                                MinQuantity != 1 || MaxQuantity != 1 || Look != Look.Here
-                            )
-                        ) {
-                            subText = "(" + subText + ")";
-                        }
-
+                        var subText = alt[j].ToString(useIdsForNameless, fullDepth, false);
                         if (j > 0) text += " ";
                         text += subText;
                     }
@@ -119,12 +91,16 @@ namespace TokenDiscovery {
 
                 if (
                     (
-                        Alternatives.Count > 1 ||
-                        Alternatives[0].Count > 1
-                    ) && (
-                        MinQuantity != 1 ||
-                        MaxQuantity != 1 ||
-                        Look != Look.Here
+                        Alternatives.Count > 1 &&
+                        !topLevel
+                    ) || (
+                        (
+                            Alternatives[0].Count > 1
+                        ) && (
+                            MinQuantity != 1 ||
+                            MaxQuantity != 1 ||
+                            Look != Look.Here
+                        )
                     )
                 ) {
                     text = "(" + text + ")";
@@ -297,6 +273,7 @@ namespace TokenDiscovery {
                 (MaxQuantity == 0 && matchCount < 1) ||
                 matchCount < MaxQuantity
             ) {
+                int innerEndAt;
 
                 if (Pattern != null) {
                     var token = Pattern.Match(chain, startAt);
@@ -312,15 +289,16 @@ namespace TokenDiscovery {
                         allMatched = true;
                         int seqStartAt = startAt;
                         foreach (var elem in sequence) {
-                            if (!elem.Match(chain, seqStartAt, out endAt)) {
+                            if (!elem.Match(chain, seqStartAt, out innerEndAt)) {
                                 allMatched = false;
                                 break;  // Failed to match this alternative sequence
                             }
-                            seqStartAt = endAt;
+                            seqStartAt = innerEndAt;
                         }
                         if (allMatched) {
                             matchCount++;
                             startAt = seqStartAt;
+                            endAt = startAt;
                             break;
                         }
                     }

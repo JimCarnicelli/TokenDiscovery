@@ -52,17 +52,21 @@ namespace TokenDiscovery {
         }
 
         public bool PatternExists(string patternText, out Pattern pattern) {
-            // Parse the text into a pattern and then render it back to text
+            // This is a bit convoluted. We'll naively construct the pattern based on the 
+            // source text. Then we'll render it back to a standardized string
+            // representation. That's likely to be different from the original string. Then
+            // we'll construct a new pattern based on that. This second parsing should 
+            // properly reduce the pattern, getting rid of unnecessary parentheses.
             var newPattern = NewPattern(patternText);
-            var newPatternDescription = newPattern.Describe(false, true);
+            var newPatternDescription = newPattern.Describe();
+            newPattern = NewPattern(newPatternDescription);
 
-            if (newPattern.Describe() == "(Word Space)+ Word") {
-                var x = 1;
-            }
+            // Finally we'll construct a full-depth description for use in preventing functional duplicates
+            newPatternDescription = newPattern.Describe(false, true);
 
             //Console.WriteLine("- " + patternText + "  ->  " + newPatternDescription);
 
-            // Check to see if this pattern already exists
+            // Check to see if this pattern already exists by comparing full-depth descriptions
             pattern = Patterns.Values.Where(e => e.Describe(false, true) == newPatternDescription).FirstOrDefault();
             if (pattern != null) return true;
 
@@ -306,9 +310,10 @@ namespace TokenDiscovery {
 
             // Generate an entity for each of the supported visible ASCII characters
             for (int i = 32; i < 127; i++) {
-                if (i == 32) {
-                    string s = "" + (char)i;
-                    RegisterLiteral(-1, "Space", s);
+                if (i == ' ') {
+                    RegisterLiteral(-1, "Space", " ");
+                } else if (i == '|') {
+                    RegisterLiteral(-1, "Pipe", "|");
                 } else {
                     string s = "" + (char)i;
                     RegisterLiteral(-1, s, s);
@@ -427,7 +432,7 @@ namespace TokenDiscovery {
         /// <summary>
         /// Collect some usage statistics about the patterns found in the given token chain created by parsing
         /// </summary>
-        public void Survey(TokenChain chain) {
+        public void Survey(TokenChain chain, int iteration) {
             var coverages = new Dictionary<Pattern, List<int>>();
 
             for (int i = 0; i < chain.Length; i++) {
@@ -471,6 +476,7 @@ namespace TokenDiscovery {
                     if (secondStartAt >= chain.Length) continue;
                     foreach (var secondToken in chain.Heads[secondStartAt].Values) {
                         string firstSecondKey = firstToken.Pattern.Id + "|" + secondToken.Pattern.Id;
+
                         // Don't waste time with old observations
                         if (!OldSurveySequences.ContainsKey(firstSecondKey)) {
                             if (!SurveySequences.TryGetValue(firstSecondKey, out List<string> firstSecondExamples)) {
@@ -524,11 +530,10 @@ namespace TokenDiscovery {
         }
 
         public void CullExperiments() {
-            return;
             var sortedPatterns = Patterns.Values
                 .Where(e => e.Type == PatternType.Experimental && e.SurveyMatchCount > 0)
                 .OrderByDescending(e => e.SurveyCoverage - e.Penalty)
-                .Skip(30)  // We'll keep the current best
+                .Skip(100)  // We'll keep the current best
                 .ToList();
             //Console.WriteLine("Culling " + sortedPatterns.Count() + " unproductive patterns\n");
             foreach (var pattern in sortedPatterns) {
@@ -545,7 +550,7 @@ namespace TokenDiscovery {
                 var sortedSequences = SurveySequences
                     .Where(e => e.Key.Split('|').Length == 2 && e.Value.Count > 3)
                     .OrderByDescending(e => e.Value.Count)
-                    .Take(50);
+                    .Take(100);
                 foreach (var keyValue in sortedSequences) {
                     var parts = keyValue.Key.Split('|');
                     var examples = keyValue.Value;
@@ -555,6 +560,7 @@ namespace TokenDiscovery {
                     // "A A"
                     if (parts[0] == parts[1]) {
                         RegisterExperiment("[" + firstPattern.Id + "]+");
+                        //RegisterExperiment("<[" + firstPattern.Id + "]! [" + firstPattern.Id + "]+");
                     } else {  // "A B"
                         var pattern = RegisterExperiment("[" + firstPattern.Id + "] [" + secondPattern.Id + "]");
                     }

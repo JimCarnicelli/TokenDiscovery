@@ -19,6 +19,10 @@ namespace TokenDiscovery {
 
         public string Text;
 
+        public override string ToString() {
+            return Pattern + " >> (" + StartAt + " - " + (StartAt + Length) + ") '" + Text + "'";
+        }
+
     }
 
 }
