@@ -404,7 +404,8 @@ namespace TokenDiscovery {
         #region Experiment-based pattern learning
 
 
-        private Dictionary<string, List<string>> SurveySequences = new();
+        //private Dictionary<string, List<string>> SurveySequences = new();
+        private Dictionary<string, Dictionary<string, bool>> SurveySequences = new();
 
         private Dictionary<string, bool> OldSurveySequences = new();
 
@@ -432,9 +433,10 @@ namespace TokenDiscovery {
         /// <summary>
         /// Collect some usage statistics about the patterns found in the given token chain created by parsing
         /// </summary>
-        public void Survey(TokenChain chain, int iteration) {
+        public void Survey(TokenChain chain, int iteration, int paragraph) {
             var coverages = new Dictionary<Pattern, List<int>>();
 
+            // For each position along the chain, collect stats on each pattern match starting there
             for (int i = 0; i < chain.Length; i++) {
                 foreach (var token in chain.Heads[i].Values) {
                     var pattern = token.Pattern;
@@ -466,10 +468,12 @@ namespace TokenDiscovery {
                 }
             }
 
+            // For each pattern found in the chain, distill down the character positions covered into sub totals
             foreach (var pattern in coverages.Keys) {
                 pattern.SurveyCoverage += coverages[pattern].Count;
             }
 
+            // Find pairs of adjoining patterns in the chain
             for (int i = 0; i < chain.Length - 1; i++) {
                 foreach (var firstToken in chain.Heads[i].Values) {
                     int secondStartAt = firstToken.StartAt + firstToken.Length;
@@ -479,11 +483,16 @@ namespace TokenDiscovery {
 
                         // Don't waste time with old observations
                         if (!OldSurveySequences.ContainsKey(firstSecondKey)) {
-                            if (!SurveySequences.TryGetValue(firstSecondKey, out List<string> firstSecondExamples)) {
-                                firstSecondExamples = new List<string>();
+                            if (!SurveySequences.TryGetValue(firstSecondKey, out Dictionary<string, bool> firstSecondExamples)) {
+                                firstSecondExamples = new();
                                 SurveySequences[firstSecondKey] = firstSecondExamples;
                             }
-                            firstSecondExamples.Add(firstToken.Text + secondToken.Text);
+                            //firstSecondExamples.Add(firstToken.Text + secondToken.Text);
+
+                            // Compute the coverage for each adjacent pairing
+                            for (int j = firstToken.StartAt; j < firstToken.StartAt + firstToken.Length + secondToken.Length; j++) {
+                                firstSecondExamples[paragraph + "|" + j] = true;
+                            }
                         }
 
                         /*
@@ -512,11 +521,12 @@ namespace TokenDiscovery {
         public void SurveyResults() {
             var sortedList = Patterns.Values
                 .Where(e => e.Type >= PatternType.Basics && e.SurveyMatchCount > 0)
-                .OrderByDescending(e => e.SurveyStretch)
+                //.OrderByDescending(e => e.SurveyStretch)
+                .OrderByDescending(e => e.SurveyCoverage)
                 .Take(200);
             foreach (var pattern in sortedList) {
                 Console.WriteLine(
-                    "- " + pattern.SurveyStretch.ToString("#,##0") +
+                    "- " + pattern.SurveyCoverage.ToString("#,##0") +
                     " - [" + pattern.Id + "]" +
                     " - " + pattern
                 );
@@ -543,26 +553,44 @@ namespace TokenDiscovery {
             }
         }
 
-        public void ProposePatterns() {
+        public void ProposePatterns(List<string> paragraphs) {
 
             // Pairs ("A B")
             {
                 var sortedSequences = SurveySequences
                     .Where(e => e.Key.Split('|').Length == 2 && e.Value.Count > 3)
                     .OrderByDescending(e => e.Value.Count)
-                    .Take(100);
+                    .Take(100)
+                    .ToList();
                 foreach (var keyValue in sortedSequences) {
                     var parts = keyValue.Key.Split('|');
                     var examples = keyValue.Value;
                     var firstPattern = Patterns[int.Parse(parts[0])];
                     var secondPattern = Patterns[int.Parse(parts[1])];
 
+                    /*
+                    Console.WriteLine(firstPattern + "  |  " + secondPattern);
+                    char[] coverageText = paragraphs[3].ToCharArray();
+                    for (int i = 0; i < coverageText.Length; i++) {
+                        if (!examples.ContainsKey("3|" + i)) coverageText[i] = '_';
+                    }
+                    Console.WriteLine("---");
+                    Console.WriteLine(new string(coverageText));
+                    Console.WriteLine("---");
+                    */
+
                     // "A A"
                     if (parts[0] == parts[1]) {
-                        RegisterExperiment("[" + firstPattern.Id + "]+");
-                        //RegisterExperiment("<[" + firstPattern.Id + "]! [" + firstPattern.Id + "]+");
+                        var newPattern = RegisterExperiment("[" + firstPattern.Id + "]+");
+                        //var newPattern = RegisterExperiment("<[" + firstPattern.Id + "]! [" + firstPattern.Id + "]+");
+
+                        Console.WriteLine(keyValue.Value.Count + " [" + newPattern.Id + "]  " + newPattern + "  |  (" + firstPattern + ")+");
+
                     } else {  // "A B"
-                        var pattern = RegisterExperiment("[" + firstPattern.Id + "] [" + secondPattern.Id + "]");
+                        var newPattern = RegisterExperiment("[" + firstPattern.Id + "] [" + secondPattern.Id + "]");
+
+                        Console.WriteLine(keyValue.Value.Count + " [" + newPattern.Id + "]  " + newPattern + "  |  (" + firstPattern + ") (" + secondPattern + ")");
+
                     }
 
                     /*

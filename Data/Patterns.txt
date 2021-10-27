@@ -124,102 +124,105 @@ Id | Name | Type | Pattern
 122 | Lowercase | Basics | a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
 123 | Letter | Basics | Uppercase | Lowercase
 124 |  | Experimental | Letter Lowercase
-125 | Word | Experimental | Letter+
-449 |  | Experimental | Word Space Letter Lowercase+ Space Letter Letter
-448 |  | Experimental | Word Space Letter Lowercase+ Space Letter Lowercase
-447 |  | Experimental | Word Space Letter Word Space (Letter Lowercase)+
-446 |  | Experimental | Word Space Letter Word Space Letter Lowercase+
-423 |  | Experimental | (Lowercase+ Space)+ Letter Lowercase+
-422 |  | Experimental | (Lowercase+ Space)+ Letter Word
-420 |  | Experimental | (Lowercase+ Space)+ Word
-415 |  | Experimental | Letter (Word Space Letter)+
-414 |  | Experimental | Letter Lowercase+ Space Word
-413 |  | Experimental | Letter Word Space Word
-412 |  | Experimental | Letter Lowercase+ Space Letter
-411 |  | Experimental | Letter Word Space Letter
-409 |  | Experimental | (Lowercase+ Space)+
-404 |  | Experimental | Lowercase+ Space Letter (Lowercase Letter)+
-403 |  | Experimental | Lowercase+ Space Letter (Letter Lowercase)+
-399 |  | Experimental | Word Space Letter Word Space Word
-400 |  | Experimental | Word Space Letter Lowercase+ Space Word
-398 |  | Experimental | Word Space Word Space (Letter Lowercase)+
-397 |  | Experimental | Word Space Word Space Letter Lowercase+
-396 |  | Experimental | Word Space Word Space Letter Word
-395 |  | Experimental | Word Space Word Space Letter Letter
-394 |  | Experimental | Word Space Word Space Letter Lowercase
-391 |  | Experimental | Letter (Word Space)+
-392 |  | Experimental | Word Space Word Space Word
-379 |  | Experimental | (Word Space)+ (Letter Lowercase)+
-377 |  | Experimental | (Word Space)+ Letter Word
-373 |  | Experimental | (Word Space Letter)+ (Lowercase Letter)+
-375 | Phrase | Experimental | (Word Space)+ Word
-372 |  | Experimental | (Word Space Letter)+ (Letter Lowercase)+
-378 |  | Experimental | (Word Space)+ Letter Lowercase+
-371 |  | Experimental | (Word Space Letter)+ Lowercase Lowercase+
-369 |  | Experimental | (Word Space Letter)+ Letter Lowercase+
-370 |  | Experimental | (Word Space Letter)+ Lowercase Word
-368 |  | Experimental | (Word Space Letter)+ Letter Word
-363 |  | Experimental | (Word Space Letter)+ Letter
-364 |  | Experimental | (Word Space Letter)+ Word
-365 |  | Experimental | (Word Space Letter)+ Lowercase+
-362 |  | Experimental | (Word Space Letter)+ Lowercase
-224 |  | Experimental | Word Space
-225 |  | Experimental | Lowercase+ Space
-226 |  | Experimental | Word Space Letter
-227 |  | Experimental | Letter Word
-228 |  | Experimental | Letter Lowercase+
-229 |  | Experimental | Lowercase+ Space Letter
-244 |  | Experimental | (Letter Lowercase)+
-248 |  | Experimental | Space Word
-251 |  | Experimental | Space Letter Word
-252 |  | Experimental | Space Letter Lowercase+
-253 |  | Experimental | Space Lowercase+
-256 |  | Experimental | Space Lowercase Word
-257 |  | Experimental | Space Lowercase Lowercase+
-456 |  | Experimental | Lowercase (Word Space)+
-263 |  | Experimental | Letter Space Word
-452 |  | Experimental | Word Space Letter Lowercase+ Space (Letter Lowercase)+
-265 |  | Experimental | Lowercase Space Word
-451 |  | Experimental | Word Space Letter Lowercase+ Space Letter Lowercase+
-450 |  | Experimental | Word Space Letter Lowercase+ Space Letter Word
-431 |  | Experimental | Letter (Lowercase+ Space)+
-443 |  | Experimental | Word Space Letter Word Space Letter Lowercase
-444 |  | Experimental | Word Space Letter Word Space Letter Letter
-445 |  | Experimental | Word Space Letter Word Space Letter Word
-441 |  | Experimental | Lowercase+ Space Word Space Word
-310 |  | Experimental | Word Space Word
-311 |  | Experimental | Word Space Letter Lowercase
-312 |  | Experimental | Word Space Letter Letter
-313 |  | Experimental | Word Space Letter Word
-314 |  | Experimental | Word Space Letter Lowercase+
-315 |  | Experimental | Word Space (Letter Lowercase)+
-316 |  | Experimental | Lowercase+ Space Word
-317 |  | Experimental | Lowercase+ Space Letter Lowercase
-318 |  | Experimental | Lowercase+ Space Letter Letter
-319 |  | Experimental | Lowercase+ Space Letter Word
-320 |  | Experimental | Lowercase+ Space Letter Lowercase+
-321 |  | Experimental | Lowercase+ Space (Letter Lowercase)+
-322 |  | Experimental | Word Space Lowercase+
-323 |  | Experimental | Word Space Lowercase Letter
-324 |  | Experimental | Word Space Lowercase Lowercase
-325 |  | Experimental | Word Space Lowercase Word
-326 |  | Experimental | Word Space Lowercase Lowercase+
-327 |  | Experimental | Word Space (Lowercase Letter)+
-328 |  | Experimental | Lowercase+ Space Lowercase+
-331 |  | Experimental | Lowercase+ Space Lowercase Word
-332 |  | Experimental | Lowercase+ Space Lowercase Lowercase+
-333 |  | Experimental | Lowercase+ Space (Lowercase Letter)+
-334 |  | Experimental | (Word Space)+
-341 |  | Experimental | Word Space Letter Lowercase Word
-342 |  | Experimental | Word Space Letter Lowercase Lowercase+
-343 |  | Experimental | Word Space Letter Letter Word
-344 |  | Experimental | Word Space Letter Letter Lowercase+
-345 |  | Experimental | Word Space Letter (Letter Lowercase)+
-346 |  | Experimental | Word Space Letter (Lowercase Letter)+
-349 |  | Experimental | Letter Word Space
-350 |  | Experimental | Letter Lowercase+ Space
-353 |  | Experimental | (Word Space Letter)+
-358 |  | Experimental | Lowercase+ Space Letter Lowercase Word
-359 |  | Experimental | Lowercase+ Space Letter Lowercase Lowercase+
-360 |  | Experimental | Lowercase+ Space Letter Letter Word
-361 |  | Experimental | Lowercase+ Space Letter Letter Lowercase+
+125 | Word | Derived | Letter+
+126 |  | Experimental | Lowercase+
+127 |  | Experimental | Lowercase Letter
+224 |  | Experimental | Space Word
+225 |  | Experimental | Space Letter Word
+226 |  | Experimental | Space Letter Lowercase+
+227 |  | Experimental | Letter Space Word
+228 |  | Experimental | Lowercase Space Word
+229 |  | Experimental | Space Lowercase+
+230 |  | Experimental | Space Lowercase Word
+231 |  | Experimental | Space Lowercase Lowercase+
+232 |  | Experimental | Word Space Letter
+233 | Word_Space | Derived | Word Space
+234 |  | Experimental | Lowercase+ Space Letter
+235 |  | Experimental | Letter Word
+236 |  | Experimental | Letter Lowercase+
+237 |  | Experimental | Lowercase+ Space
+238 |  | Experimental | Lowercase Word
+239 |  | Experimental | Lowercase Lowercase+
+254 |  | Experimental | (Letter Lowercase)+
+314 | Word_Spaces | Derived | Word_Space+
+315 |  | Experimental | Word Space Word
+316 |  | Experimental | Word_Space Word
+317 |  | Experimental | Word Space Letter Word
+318 |  | Experimental | Word Space Letter Lowercase+
+319 |  | Experimental | Word_Space Letter Word
+320 |  | Experimental | Word_Space Letter Lowercase+
+321 |  | Experimental | Letter Word Space Word
+322 |  | Experimental | Letter Lowercase+ Space Word
+323 |  | Experimental | Letter Word Space Letter Word
+324 |  | Experimental | Letter Word Space Letter Lowercase+
+325 |  | Experimental | Letter Lowercase+ Space Letter Word
+326 |  | Experimental | Letter Lowercase+ Space Letter Lowercase+
+327 |  | Experimental | Lowercase+ Space Word
+328 |  | Experimental | Lowercase+ Space Letter Word
+329 |  | Experimental | Lowercase+ Space Letter Lowercase+
+330 |  | Experimental | Lowercase Word Space Word
+331 |  | Experimental | Lowercase Lowercase+ Space Word
+332 |  | Experimental | Word_Space (Letter Lowercase)+
+333 |  | Experimental | Lowercase Word Space Letter Word
+334 |  | Experimental | Lowercase Word Space Letter Lowercase+
+335 |  | Experimental | Lowercase Lowercase+ Space Letter Word
+336 |  | Experimental | Lowercase Lowercase+ Space Letter Lowercase+
+337 |  | Experimental | (Letter Lowercase)+ Space Word
+338 |  | Experimental | (Letter Lowercase)+ Space Letter Word
+339 |  | Experimental | (Letter Lowercase)+ Space Letter Lowercase+
+340 |  | Experimental | Lowercase+ Space (Letter Lowercase)+
+341 |  | Experimental | (Lowercase Letter)+ Space Word
+342 |  | Experimental | Word Space Letter Letter Word
+343 |  | Experimental | Word Space Letter Letter Lowercase+
+344 |  | Experimental | Word Space Letter Lowercase Word
+345 |  | Experimental | Word Space Letter Lowercase Lowercase+
+346 |  | Experimental | Word_Space Letter Lowercase Word
+347 |  | Experimental | Word_Space Letter Lowercase Lowercase+
+348 |  | Experimental | (Lowercase Letter)+ Space Letter Word
+349 |  | Experimental | (Lowercase Letter)+ Space Letter Lowercase+
+350 |  | Experimental | Lowercase+ Space Letter Letter Word
+351 |  | Experimental | Lowercase+ Space Letter Letter Lowercase+
+352 |  | Experimental | Lowercase+ Space Letter Lowercase Word
+353 |  | Experimental | Lowercase+ Space Letter Lowercase Lowercase+
+354 |  | Experimental | (Space Word)+
+355 |  | Experimental | Space Word Space Letter Word
+356 |  | Experimental | Space Word Space Letter Lowercase+
+357 |  | Experimental | Space Letter Word Space Word
+358 |  | Experimental | Space Letter Lowercase+ Space Word
+359 |  | Experimental | Word Space Lowercase+
+360 |  | Experimental | Word_Space Lowercase+
+361 |  | Experimental | Word Space Lowercase Word
+362 |  | Experimental | Word Space Lowercase Lowercase+
+363 |  | Experimental | Word_Space Lowercase Word
+364 |  | Experimental | Word_Space Lowercase Lowercase+
+365 |  | Experimental | (Space Letter Word)+
+366 |  | Experimental | Space Letter Word Space Letter Lowercase+
+367 |  | Experimental | Space Letter Lowercase+ Space Letter Word
+368 |  | Experimental | (Space Letter Lowercase+)+
+369 |  | Experimental | Letter Lowercase Word Space Word
+370 |  | Experimental | Letter Lowercase Lowercase+ Space Word
+371 |  | Experimental | Letter Lowercase Word Space Letter Word
+372 |  | Experimental | Letter Lowercase Word Space Letter Lowercase+
+373 |  | Experimental | Letter Lowercase Lowercase+ Space Letter Word
+374 |  | Experimental | Letter Lowercase Lowercase+ Space Letter Lowercase+
+375 |  | Experimental | Letter Word Space Lowercase+
+376 |  | Experimental | Letter Lowercase+ Space Lowercase+
+377 |  | Experimental | Word Space Letter (Letter Lowercase)+
+378 |  | Experimental | Word Space Letter (Lowercase Letter)+
+379 |  | Experimental | Letter Word Space Lowercase Word
+380 |  | Experimental | Letter Word Space Lowercase Lowercase+
+381 |  | Experimental | Letter Lowercase+ Space Lowercase Word
+382 |  | Experimental | Letter Lowercase+ Space Lowercase Lowercase+
+383 |  | Experimental | Lowercase+ Space Lowercase+
+384 |  | Experimental | Lowercase+ Space Lowercase Word
+385 |  | Experimental | Lowercase+ Space Lowercase Lowercase+
+386 |  | Experimental | Lowercase Letter Word Space Word
+387 |  | Experimental | Lowercase Letter Lowercase+ Space Word
+388 |  | Experimental | Lowercase Letter Word Space Letter Word
+389 |  | Experimental | Lowercase Letter Word Space Letter Lowercase+
+390 |  | Experimental | Lowercase Letter Lowercase+ Space Letter Word
+391 |  | Experimental | Lowercase Letter Lowercase+ Space Letter Lowercase+
+392 |  | Experimental | Lowercase+ Space Letter (Letter Lowercase)+
+393 |  | Experimental | Lowercase+ Space Letter (Lowercase Letter)+
+394 |  | Experimental | Lowercase Word Space Lowercase+
+395 |  | Experimental | Lowercase Lowercase+ Space Lowercase+

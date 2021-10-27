@@ -88,7 +88,7 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
             Console.ReadLine();
             */
 
-            const int iterations = 6;
+            const int iterations = 4;
 
             for (int i = 1; i <= iterations; i++) {
 
@@ -97,13 +97,14 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                 parser.ClearSurvey();
 
                 // Process each of the paragraphs
-                foreach (var paragraph in paragraphs) {
+                for (int p = 0; p < paragraphs.Count; p++) {
+                    var paragraph = paragraphs[p];
                     //Console.WriteLine(paragraph + "\n");
 
                     var chain = parser.Parse(paragraph);
                     // Console.WriteLine(chain.ToDebugString(PatternType.Derived, false)); Console.WriteLine();
 
-                    parser.Survey(chain, i);
+                    parser.Survey(chain, i, p);
                 }
 
                 File.WriteAllText(dataPath + "TokenChain.txt",
@@ -112,14 +113,16 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                 );
 
                 /*
-                Console.WriteLine("#################### Survey results ####################");
-                parser.SurveyResults();
-                Console.WriteLine();
+                if (i > 1) {
+                    Console.WriteLine("#################### Survey results ####################");
+                    parser.SurveyResults();
+                    Console.WriteLine();
+                }
                 */
 
                 if (i < iterations) {
                     //Console.WriteLine("#################### Propose patterns ####################");
-                    parser.ProposePatterns();
+                    parser.ProposePatterns(paragraphs);
                     //Console.WriteLine();
                 }
 
@@ -134,10 +137,27 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                     switch (description) {
                         case "Letter+":
                             pattern.Name = "Word";
+                            pattern.Type = PatternType.Derived;
+                            parser.Register(pattern);
+                            break;
+                        case "Word Space":
+                            pattern.Name = "Word_Space";
+                            pattern.Type = PatternType.Derived;
+                            parser.Register(pattern);
+                            break;
+                        case "Word_Space+":
+                            pattern.Name = "Word_Spaces";
+                            pattern.Type = PatternType.Derived;
                             parser.Register(pattern);
                             break;
                         case "(Word Space)+ Word":
                             pattern.Name = "Phrase";
+                            pattern.Type = PatternType.Derived;
+                            parser.Register(pattern);
+                            break;
+                        case "Word_Space+ Word":
+                            pattern.Name = "Phrase";
+                            pattern.Type = PatternType.Derived;
                             parser.Register(pattern);
                             break;
                     }
@@ -145,6 +165,7 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
 
                 parser.CullExperiments();
 
+                /*
                 Console.WriteLine("#################### Patterns ####################");
                 var sortedPatterns = parser.Patterns.Values
                     .OrderByDescending(e => e.SurveyStretch - e.Penalty);
@@ -166,6 +187,8 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
                     }
                 }
                 Console.WriteLine();
+                */
+
             }
 
             File.WriteAllText(dataPath + "TokenChain.txt",

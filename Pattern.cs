@@ -39,6 +39,9 @@ namespace TokenDiscovery {
 
         public int Penalty {
             get {
+                // TODO: Reconsider penalties later
+                return 0;
+
                 // Already calculated and cached?
                 if (penalty <= 0) {  // Not yet
                     if (Type == PatternType.Literal) {
