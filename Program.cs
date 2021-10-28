@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace TokenDiscovery {
     class Program {
 
+        // https://www.cnn.com/2021/10/10/health/frieden-salt-sodium/index.html
         static string sourceText = @"
 Eating too much salt can kill you. Excessive salt intake will cause an 
 estimated 1.6 million deaths worldwide this year. Four out of five of these 
@@ -46,34 +46,15 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
         static void Main(string[] args) {
             Console.WriteLine("Starting\n");
 
-            // Pre-parse the raw text into a set of paragraphs with some text cleanup
-            var paragraphs = new List<string>();
-            foreach (var rawParagraph in sourceText.Split("\r\n\r\n")) {
-                string paragraphText = rawParagraph.Replace("\r\n", " ");
-                paragraphText = paragraphText.Replace("  ", " ").Replace("  ", " ").Replace("  ", " ");
-                while (paragraphText.StartsWith(" ")) paragraphText = paragraphText.Substring(1);
-                while (paragraphText.EndsWith(" ")) paragraphText = paragraphText.Substring(0, paragraphText.Length - 1);
-                paragraphs.Add(paragraphText);
-            }
+            string dataPath = DataDirectory();
 
-            var parser = new TokenParser();
-            parser.RegisterBasics();
-            //parser.Register("Word", PatternType.Derived, "<Letter! Letter+");
-            //parser.Register("Phrase", PatternType.Derived, "(Word Space)+ Word");
-            //parser.RegisterExperiment("(Word (Space Letter)) ((Word Space)+)");
-            //parser.Register(null, PatternType.Experimental, "(Aa+ Cc)* | (D E)?");
-            //parser.Register(null, PatternType.Experimental, "Lowercase+ | Uppercase+");
+            var trainer = new Trainer();
+            trainer.Initialize();
+            trainer.ImportSourceText(sourceText);
 
-            /*
-            Console.WriteLine(parser.Patterns[126].Describe());
-            Console.WriteLine(parser.Patterns[126].Describe(false, true));
-            Console.WriteLine(parser.Patterns[126].ToDebugString());
-            Console.ReadLine();
-            */
+            trainer.Iterations = 2;
+            trainer.Train();
 
-            //parser.RegisterExperiment("(Word Space)+");
-
-            string dataPath = @"G:\My Drive\Ventures\MsDev\TokenDiscovery\Data\";
             //parser.SavePatterns(dataPath + "Patterns.txt");
             //parser.LoadPatterns(dataPath + "Patterns.txt");
 
@@ -88,123 +69,35 @@ death by 12%, the risk of stroke by 14%, and total cardiovascular events
             Console.ReadLine();
             */
 
-            const int iterations = 4;
-
-            for (int i = 1; i <= iterations; i++) {
-
-                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Iteration " + i + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-
-                parser.ClearSurvey();
-
-                // Process each of the paragraphs
-                for (int p = 0; p < paragraphs.Count; p++) {
-                    var paragraph = paragraphs[p];
-                    //Console.WriteLine(paragraph + "\n");
-
-                    var chain = parser.Parse(paragraph);
-                    // Console.WriteLine(chain.ToDebugString(PatternType.Derived, false)); Console.WriteLine();
-
-                    parser.Survey(chain, i, p);
-                }
-
-                File.WriteAllText(dataPath + "TokenChain.txt",
-                    paragraphs[3] + "\n\n" +
-                    parser.Parse(paragraphs[0]).ToDebugString(PatternType.Derived, false)
-                );
-
-                /*
-                if (i > 1) {
-                    Console.WriteLine("#################### Survey results ####################");
-                    parser.SurveyResults();
-                    Console.WriteLine();
-                }
-                */
-
-                if (i < iterations) {
-                    //Console.WriteLine("#################### Propose patterns ####################");
-                    parser.ProposePatterns(paragraphs);
-                    //Console.WriteLine();
-                }
-
-                // Name certain expected patterns
-                var patterns = parser.Patterns.Values
-                    .Where(e => e.Name == null)
-                    .ToList();
-                foreach (var pattern in patterns) {
-                    if (pattern.Name != null) continue;
-                    var description = pattern.Describe();
-
-                    switch (description) {
-                        case "Letter+":
-                            pattern.Name = "Word";
-                            pattern.Type = PatternType.Derived;
-                            parser.Register(pattern);
-                            break;
-                        case "Word Space":
-                            pattern.Name = "Word_Space";
-                            pattern.Type = PatternType.Derived;
-                            parser.Register(pattern);
-                            break;
-                        case "Word_Space+":
-                            pattern.Name = "Word_Spaces";
-                            pattern.Type = PatternType.Derived;
-                            parser.Register(pattern);
-                            break;
-                        case "(Word Space)+ Word":
-                            pattern.Name = "Phrase";
-                            pattern.Type = PatternType.Derived;
-                            parser.Register(pattern);
-                            break;
-                        case "Word_Space+ Word":
-                            pattern.Name = "Phrase";
-                            pattern.Type = PatternType.Derived;
-                            parser.Register(pattern);
-                            break;
-                    }
-                }
-
-                parser.CullExperiments();
-
-                /*
-                Console.WriteLine("#################### Patterns ####################");
-                var sortedPatterns = parser.Patterns.Values
-                    .OrderByDescending(e => e.SurveyStretch - e.Penalty);
-                foreach (var pattern in sortedPatterns) {
-                    if (pattern.Type < PatternType.Experimental) continue;
-                    Console.WriteLine(
-                        pattern.Identity + " - " +
-                        (pattern.SurveyStretch - pattern.Penalty) + " = (" + pattern.SurveyStretch + "-" + pattern.Penalty + ") - " +
-                        pattern.Describe()
-                    );
-                    if (pattern.SurveyExamples != null) {
-                        var sortedExamples = pattern.SurveyExamples
-                            .OrderByDescending(e => e.Length)
-                            .Take(3)
-                            .ToList();
-                        foreach (string example in sortedExamples) {
-                            Console.WriteLine("  | " + example);
-                        }
-                    }
-                }
-                Console.WriteLine();
-                */
-
-            }
-
+            var paragraph = trainer.Paragraphs[0];
             File.WriteAllText(dataPath + "TokenChain.txt",
-                paragraphs[3] + "\n\n" +
-                parser.Parse(paragraphs[0]).ToDebugString(PatternType.Derived, false)
+                paragraph + "\n\n" +
+                trainer.parser.Parse(paragraph).ToDebugString(PatternType.Derived, false)
             );
 
-            parser.SavePatterns(dataPath + "Patterns.txt");
-
-            //Console.Write(parser.Patterns[142].ToDebugString());
-            //Console.WriteLine(parser.Patterns[142].Describe());
-
-            parser.ClearAllSurveys();
+            trainer.parser.SavePatterns(dataPath + "Patterns.txt");
 
             Console.WriteLine("Done");
             Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Get the path to the data directory based on whether we are in debug or release mode
+        /// </summary>
+        private static string DataDirectory([CallerFilePath] string path = null) {
+#if DEBUG
+            // We were given as input the path to this code file at compile time
+            path = Path.GetDirectoryName(path);
+#else
+            // We will rely on the executable's directory
+            path = Environment.CurrentDirectory;
+#endif
+            if (path.Contains("\\")) {
+                path += "\\Data\\";
+            } else {
+                path += "//Data//";
+            }
+            return path;
         }
 
     }

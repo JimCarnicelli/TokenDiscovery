@@ -55,28 +55,6 @@ namespace TokenDiscovery {
         }
         private int penalty = 0;
 
-        /// <summary>
-        /// How many matches were found in the token chains surveyed
-        /// </summary>
-        public int SurveyMatchCount;
-
-        /// <summary>
-        /// The longest single match found in the token chains surveyed
-        /// </summary>
-        public int SurveyLongest;
-
-        /// <summary>
-        /// The total number of characters covered by matches in the token chains surveyed
-        /// </summary>
-        public int SurveyCoverage;
-
-        /// <summary>
-        /// Sum of the longest continuous stretches in token chains surveyed starting from the first character
-        /// </summary>
-        public int SurveyStretch;
-
-        public List<string> SurveyExamples;
-
 
         #endregion
 

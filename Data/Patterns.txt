@@ -1,228 +1,126 @@
-Id | Name | Type | Pattern
-0 | Space | Literal | ' '
-1 | '!' | Literal | '!'
-2 | '"' | Literal | '"'
-3 | '#' | Literal | '#'
-4 | '$' | Literal | '$'
-5 | '%' | Literal | '%'
-6 | '&' | Literal | '&'
-7 | '''' | Literal | ''''
-8 | '(' | Literal | '('
-9 | ')' | Literal | ')'
-10 | '*' | Literal | '*'
-11 | '+' | Literal | '+'
-12 | ',' | Literal | ','
-13 | '-' | Literal | '-'
-14 | '.' | Literal | '.'
-15 | '/' | Literal | '/'
-16 | '0' | Literal | '0'
-17 | '1' | Literal | '1'
-18 | '2' | Literal | '2'
-19 | '3' | Literal | '3'
-20 | '4' | Literal | '4'
-21 | '5' | Literal | '5'
-22 | '6' | Literal | '6'
-23 | '7' | Literal | '7'
-24 | '8' | Literal | '8'
-25 | '9' | Literal | '9'
-26 | ':' | Literal | ':'
-27 | ';' | Literal | ';'
-28 | '<' | Literal | '<'
-29 | '=' | Literal | '='
-30 | '>' | Literal | '>'
-31 | '?' | Literal | '?'
-32 | '@' | Literal | '@'
-33 | A | Literal | 'A'
-34 | B | Literal | 'B'
-35 | C | Literal | 'C'
-36 | D | Literal | 'D'
-37 | E | Literal | 'E'
-38 | F | Literal | 'F'
-39 | G | Literal | 'G'
-40 | H | Literal | 'H'
-41 | I | Literal | 'I'
-42 | J | Literal | 'J'
-43 | K | Literal | 'K'
-44 | L | Literal | 'L'
-45 | M | Literal | 'M'
-46 | N | Literal | 'N'
-47 | O | Literal | 'O'
-48 | P | Literal | 'P'
-49 | Q | Literal | 'Q'
-50 | R | Literal | 'R'
-51 | S | Literal | 'S'
-52 | T | Literal | 'T'
-53 | U | Literal | 'U'
-54 | V | Literal | 'V'
-55 | W | Literal | 'W'
-56 | X | Literal | 'X'
-57 | Y | Literal | 'Y'
-58 | Z | Literal | 'Z'
-59 | '[' | Literal | '['
-60 | '\' | Literal | '\'
-61 | ']' | Literal | ']'
-62 | '^' | Literal | '^'
-63 | '_' | Literal | '_'
-64 | '`' | Literal | '`'
-65 | a | Literal | 'a'
-66 | b | Literal | 'b'
-67 | c | Literal | 'c'
-68 | d | Literal | 'd'
-69 | e | Literal | 'e'
-70 | f | Literal | 'f'
-71 | g | Literal | 'g'
-72 | h | Literal | 'h'
-73 | i | Literal | 'i'
-74 | j | Literal | 'j'
-75 | k | Literal | 'k'
-76 | l | Literal | 'l'
-77 | m | Literal | 'm'
-78 | n | Literal | 'n'
-79 | o | Literal | 'o'
-80 | p | Literal | 'p'
-81 | q | Literal | 'q'
-82 | r | Literal | 'r'
-83 | s | Literal | 's'
-84 | t | Literal | 't'
-85 | u | Literal | 'u'
-86 | v | Literal | 'v'
-87 | w | Literal | 'w'
-88 | x | Literal | 'x'
-89 | y | Literal | 'y'
-90 | z | Literal | 'z'
-91 | '{' | Literal | '{'
-92 | Pipe | Literal | '|'
-93 | '}' | Literal | '}'
-94 | '~' | Literal | '~'
-95 | Aa | Basics | A | a
-96 | Bb | Basics | B | b
-97 | Cc | Basics | C | c
-98 | Dd | Basics | D | d
-99 | Ee | Basics | E | e
-100 | Ff | Basics | F | f
-101 | Gg | Basics | G | g
-102 | Hh | Basics | H | h
-103 | Ii | Basics | I | i
-104 | Jj | Basics | J | j
-105 | Kk | Basics | K | k
-106 | Ll | Basics | L | l
-107 | Mm | Basics | M | m
-108 | Nn | Basics | N | n
-109 | Oo | Basics | O | o
-110 | Pp | Basics | P | p
-111 | Qq | Basics | Q | q
-112 | Rr | Basics | R | r
-113 | Ss | Basics | S | s
-114 | Tt | Basics | T | t
-115 | Uu | Basics | U | u
-116 | Vv | Basics | V | v
-117 | Ww | Basics | W | w
-118 | Xx | Basics | X | x
-119 | Yy | Basics | Y | y
-120 | Zz | Basics | Z | z
-121 | Uppercase | Basics | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
-122 | Lowercase | Basics | a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
-123 | Letter | Basics | Uppercase | Lowercase
-124 |  | Experimental | Letter Lowercase
-125 | Word | Derived | Letter+
-126 |  | Experimental | Lowercase+
-127 |  | Experimental | Lowercase Letter
-224 |  | Experimental | Space Word
-225 |  | Experimental | Space Letter Word
-226 |  | Experimental | Space Letter Lowercase+
-227 |  | Experimental | Letter Space Word
-228 |  | Experimental | Lowercase Space Word
-229 |  | Experimental | Space Lowercase+
-230 |  | Experimental | Space Lowercase Word
-231 |  | Experimental | Space Lowercase Lowercase+
-232 |  | Experimental | Word Space Letter
-233 | Word_Space | Derived | Word Space
-234 |  | Experimental | Lowercase+ Space Letter
-235 |  | Experimental | Letter Word
-236 |  | Experimental | Letter Lowercase+
-237 |  | Experimental | Lowercase+ Space
-238 |  | Experimental | Lowercase Word
-239 |  | Experimental | Lowercase Lowercase+
-254 |  | Experimental | (Letter Lowercase)+
-314 | Word_Spaces | Derived | Word_Space+
-315 |  | Experimental | Word Space Word
-316 |  | Experimental | Word_Space Word
-317 |  | Experimental | Word Space Letter Word
-318 |  | Experimental | Word Space Letter Lowercase+
-319 |  | Experimental | Word_Space Letter Word
-320 |  | Experimental | Word_Space Letter Lowercase+
-321 |  | Experimental | Letter Word Space Word
-322 |  | Experimental | Letter Lowercase+ Space Word
-323 |  | Experimental | Letter Word Space Letter Word
-324 |  | Experimental | Letter Word Space Letter Lowercase+
-325 |  | Experimental | Letter Lowercase+ Space Letter Word
-326 |  | Experimental | Letter Lowercase+ Space Letter Lowercase+
-327 |  | Experimental | Lowercase+ Space Word
-328 |  | Experimental | Lowercase+ Space Letter Word
-329 |  | Experimental | Lowercase+ Space Letter Lowercase+
-330 |  | Experimental | Lowercase Word Space Word
-331 |  | Experimental | Lowercase Lowercase+ Space Word
-332 |  | Experimental | Word_Space (Letter Lowercase)+
-333 |  | Experimental | Lowercase Word Space Letter Word
-334 |  | Experimental | Lowercase Word Space Letter Lowercase+
-335 |  | Experimental | Lowercase Lowercase+ Space Letter Word
-336 |  | Experimental | Lowercase Lowercase+ Space Letter Lowercase+
-337 |  | Experimental | (Letter Lowercase)+ Space Word
-338 |  | Experimental | (Letter Lowercase)+ Space Letter Word
-339 |  | Experimental | (Letter Lowercase)+ Space Letter Lowercase+
-340 |  | Experimental | Lowercase+ Space (Letter Lowercase)+
-341 |  | Experimental | (Lowercase Letter)+ Space Word
-342 |  | Experimental | Word Space Letter Letter Word
-343 |  | Experimental | Word Space Letter Letter Lowercase+
-344 |  | Experimental | Word Space Letter Lowercase Word
-345 |  | Experimental | Word Space Letter Lowercase Lowercase+
-346 |  | Experimental | Word_Space Letter Lowercase Word
-347 |  | Experimental | Word_Space Letter Lowercase Lowercase+
-348 |  | Experimental | (Lowercase Letter)+ Space Letter Word
-349 |  | Experimental | (Lowercase Letter)+ Space Letter Lowercase+
-350 |  | Experimental | Lowercase+ Space Letter Letter Word
-351 |  | Experimental | Lowercase+ Space Letter Letter Lowercase+
-352 |  | Experimental | Lowercase+ Space Letter Lowercase Word
-353 |  | Experimental | Lowercase+ Space Letter Lowercase Lowercase+
-354 |  | Experimental | (Space Word)+
-355 |  | Experimental | Space Word Space Letter Word
-356 |  | Experimental | Space Word Space Letter Lowercase+
-357 |  | Experimental | Space Letter Word Space Word
-358 |  | Experimental | Space Letter Lowercase+ Space Word
-359 |  | Experimental | Word Space Lowercase+
-360 |  | Experimental | Word_Space Lowercase+
-361 |  | Experimental | Word Space Lowercase Word
-362 |  | Experimental | Word Space Lowercase Lowercase+
-363 |  | Experimental | Word_Space Lowercase Word
-364 |  | Experimental | Word_Space Lowercase Lowercase+
-365 |  | Experimental | (Space Letter Word)+
-366 |  | Experimental | Space Letter Word Space Letter Lowercase+
-367 |  | Experimental | Space Letter Lowercase+ Space Letter Word
-368 |  | Experimental | (Space Letter Lowercase+)+
-369 |  | Experimental | Letter Lowercase Word Space Word
-370 |  | Experimental | Letter Lowercase Lowercase+ Space Word
-371 |  | Experimental | Letter Lowercase Word Space Letter Word
-372 |  | Experimental | Letter Lowercase Word Space Letter Lowercase+
-373 |  | Experimental | Letter Lowercase Lowercase+ Space Letter Word
-374 |  | Experimental | Letter Lowercase Lowercase+ Space Letter Lowercase+
-375 |  | Experimental | Letter Word Space Lowercase+
-376 |  | Experimental | Letter Lowercase+ Space Lowercase+
-377 |  | Experimental | Word Space Letter (Letter Lowercase)+
-378 |  | Experimental | Word Space Letter (Lowercase Letter)+
-379 |  | Experimental | Letter Word Space Lowercase Word
-380 |  | Experimental | Letter Word Space Lowercase Lowercase+
-381 |  | Experimental | Letter Lowercase+ Space Lowercase Word
-382 |  | Experimental | Letter Lowercase+ Space Lowercase Lowercase+
-383 |  | Experimental | Lowercase+ Space Lowercase+
-384 |  | Experimental | Lowercase+ Space Lowercase Word
-385 |  | Experimental | Lowercase+ Space Lowercase Lowercase+
-386 |  | Experimental | Lowercase Letter Word Space Word
-387 |  | Experimental | Lowercase Letter Lowercase+ Space Word
-388 |  | Experimental | Lowercase Letter Word Space Letter Word
-389 |  | Experimental | Lowercase Letter Word Space Letter Lowercase+
-390 |  | Experimental | Lowercase Letter Lowercase+ Space Letter Word
-391 |  | Experimental | Lowercase Letter Lowercase+ Space Letter Lowercase+
-392 |  | Experimental | Lowercase+ Space Letter (Letter Lowercase)+
-393 |  | Experimental | Lowercase+ Space Letter (Lowercase Letter)+
-394 |  | Experimental | Lowercase Word Space Lowercase+
-395 |  | Experimental | Lowercase Lowercase+ Space Lowercase+
+Id | Name | Type >>  Pattern
+0 | Space | Literal >>  ' '
+1 | '!' | Literal >>  '!'
+2 | '"' | Literal >>  '"'
+3 | '#' | Literal >>  '#'
+4 | '$' | Literal >>  '$'
+5 | '%' | Literal >>  '%'
+6 | '&' | Literal >>  '&'
+7 | '''' | Literal >>  ''''
+8 | '(' | Literal >>  '('
+9 | ')' | Literal >>  ')'
+10 | '*' | Literal >>  '*'
+11 | '+' | Literal >>  '+'
+12 | ',' | Literal >>  ','
+13 | '-' | Literal >>  '-'
+14 | '.' | Literal >>  '.'
+15 | '/' | Literal >>  '/'
+16 | '0' | Literal >>  '0'
+17 | '1' | Literal >>  '1'
+18 | '2' | Literal >>  '2'
+19 | '3' | Literal >>  '3'
+20 | '4' | Literal >>  '4'
+21 | '5' | Literal >>  '5'
+22 | '6' | Literal >>  '6'
+23 | '7' | Literal >>  '7'
+24 | '8' | Literal >>  '8'
+25 | '9' | Literal >>  '9'
+26 | ':' | Literal >>  ':'
+27 | ';' | Literal >>  ';'
+28 | '<' | Literal >>  '<'
+29 | '=' | Literal >>  '='
+30 | '>' | Literal >>  '>'
+31 | '?' | Literal >>  '?'
+32 | '@' | Literal >>  '@'
+33 | A | Literal >>  'A'
+34 | B | Literal >>  'B'
+35 | C | Literal >>  'C'
+36 | D | Literal >>  'D'
+37 | E | Literal >>  'E'
+38 | F | Literal >>  'F'
+39 | G | Literal >>  'G'
+40 | H | Literal >>  'H'
+41 | I | Literal >>  'I'
+42 | J | Literal >>  'J'
+43 | K | Literal >>  'K'
+44 | L | Literal >>  'L'
+45 | M | Literal >>  'M'
+46 | N | Literal >>  'N'
+47 | O | Literal >>  'O'
+48 | P | Literal >>  'P'
+49 | Q | Literal >>  'Q'
+50 | R | Literal >>  'R'
+51 | S | Literal >>  'S'
+52 | T | Literal >>  'T'
+53 | U | Literal >>  'U'
+54 | V | Literal >>  'V'
+55 | W | Literal >>  'W'
+56 | X | Literal >>  'X'
+57 | Y | Literal >>  'Y'
+58 | Z | Literal >>  'Z'
+59 | '[' | Literal >>  '['
+60 | '\' | Literal >>  '\'
+61 | ']' | Literal >>  ']'
+62 | '^' | Literal >>  '^'
+63 | '_' | Literal >>  '_'
+64 | '`' | Literal >>  '`'
+65 | a | Literal >>  'a'
+66 | b | Literal >>  'b'
+67 | c | Literal >>  'c'
+68 | d | Literal >>  'd'
+69 | e | Literal >>  'e'
+70 | f | Literal >>  'f'
+71 | g | Literal >>  'g'
+72 | h | Literal >>  'h'
+73 | i | Literal >>  'i'
+74 | j | Literal >>  'j'
+75 | k | Literal >>  'k'
+76 | l | Literal >>  'l'
+77 | m | Literal >>  'm'
+78 | n | Literal >>  'n'
+79 | o | Literal >>  'o'
+80 | p | Literal >>  'p'
+81 | q | Literal >>  'q'
+82 | r | Literal >>  'r'
+83 | s | Literal >>  's'
+84 | t | Literal >>  't'
+85 | u | Literal >>  'u'
+86 | v | Literal >>  'v'
+87 | w | Literal >>  'w'
+88 | x | Literal >>  'x'
+89 | y | Literal >>  'y'
+90 | z | Literal >>  'z'
+91 | '{' | Literal >>  '{'
+92 | Pipe | Literal >>  '|'
+93 | '}' | Literal >>  '}'
+94 | '~' | Literal >>  '~'
+95 | Aa | Basics >>  A | a
+96 | Bb | Basics >>  B | b
+97 | Cc | Basics >>  C | c
+98 | Dd | Basics >>  D | d
+99 | Ee | Basics >>  E | e
+100 | Ff | Basics >>  F | f
+101 | Gg | Basics >>  G | g
+102 | Hh | Basics >>  H | h
+103 | Ii | Basics >>  I | i
+104 | Jj | Basics >>  J | j
+105 | Kk | Basics >>  K | k
+106 | Ll | Basics >>  L | l
+107 | Mm | Basics >>  M | m
+108 | Nn | Basics >>  N | n
+109 | Oo | Basics >>  O | o
+110 | Pp | Basics >>  P | p
+111 | Qq | Basics >>  Q | q
+112 | Rr | Basics >>  R | r
+113 | Ss | Basics >>  S | s
+114 | Tt | Basics >>  T | t
+115 | Uu | Basics >>  U | u
+116 | Vv | Basics >>  V | v
+117 | Ww | Basics >>  W | w
+118 | Xx | Basics >>  X | x
+119 | Yy | Basics >>  Y | y
+120 | Zz | Basics >>  Z | z
+121 | Uppercase | Basics >>  A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+122 | Lowercase | Basics >>  a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+123 | Letter | Basics >>  Uppercase | Lowercase
+124 | Digit | Basics >>  '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
