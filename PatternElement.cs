@@ -29,7 +29,7 @@ namespace TokenDiscovery {
     /// collection. Its first sub-list would contain the "B" sequence and its second would contain 
     /// the "C D" sequence.
     /// 
-    /// Note that TokenParser.NewPattern() also does some optimization to eliminate some unnecessary 
+    /// Note that Parser.NewPattern() also does some optimization to eliminate some unnecessary 
     /// nesting. For example "A (B C) D" would be reduced to its equivalent "A B C D". However 
     /// "A (B C)+ D" would not be reduced because of the "+" quantifier. One upshot of this reduction 
     /// process is that two patterns can effectively be compared for functional equivalence.
@@ -40,7 +40,7 @@ namespace TokenDiscovery {
         #region Public properties
 
 
-        public TokenParser Parser;
+        public Parser Parser;
 
         public Pattern Pattern;
 
@@ -58,7 +58,7 @@ namespace TokenDiscovery {
 
         #endregion
 
-        public PatternElement(TokenParser parser) {
+        public PatternElement(Parser parser) {
             Parser = parser;
         }
 

@@ -9,7 +9,7 @@ namespace TokenDiscovery {
     /// <summary>
     /// Parses paragraphs based on pattern matching rules
     /// </summary>
-    public class TokenParser {
+    public class Parser {
 
         #region Public properties
 
@@ -23,7 +23,7 @@ namespace TokenDiscovery {
 
         #endregion
 
-        public TokenParser() {
+        public Parser() {
         }
 
         public void Initialize() {

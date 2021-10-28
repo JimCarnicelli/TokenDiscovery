@@ -14,7 +14,7 @@ namespace TokenDiscovery {
         #region Public properties
 
 
-        public TokenParser parser = new TokenParser();
+        public Parser parser = new Parser();
 
         public List<string> Paragraphs;
 

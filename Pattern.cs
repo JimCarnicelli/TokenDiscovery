@@ -16,7 +16,7 @@ namespace TokenDiscovery {
     /// </summary>
     /// <remarks>
     /// 
-    /// See .Describe() and TokenParser.NewPattern() for more about the regex-like expression
+    /// See .Describe() and Parser.NewPattern() for more about the regex-like expression
     /// language for representing patterns.
     /// 
     /// </remarks>
@@ -25,7 +25,7 @@ namespace TokenDiscovery {
         #region Public properties
 
 
-        public TokenParser Parser;
+        public Parser Parser;
 
         public int Id = -1;
 
@@ -58,7 +58,7 @@ namespace TokenDiscovery {
 
         #endregion
 
-        public Pattern(TokenParser parser, PatternType patternType = PatternType.Experimental) {
+        public Pattern(Parser parser, PatternType patternType = PatternType.Experimental) {
             Parser = parser;
             Type = patternType;
         }
