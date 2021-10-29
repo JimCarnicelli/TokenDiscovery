@@ -216,12 +216,11 @@ namespace TokenDiscovery {
         #region Parsing text
 
 
-        public bool Match(TokenChain chain, int startAt, out int endAt) {
+        public bool Match(TokenChain chain, Token parentToken, int startAt, out int endAt) {
             int origStartAt = startAt;
             endAt = startAt;
 
             if (Look == Look.Behind) {
-
                 if (Pattern != null) {
                     int seqEndAt = startAt - 1;
                     if (seqEndAt < 0) {
@@ -276,7 +275,7 @@ namespace TokenDiscovery {
                 int innerEndAt;
 
                 if (Pattern != null) {
-                    var token = Pattern.Match(chain, startAt);
+                    var token = Pattern.Match(chain, parentToken, startAt);
                     if (token == null) break;
                     endAt = startAt + token.Length;
                     startAt = endAt;
@@ -289,7 +288,7 @@ namespace TokenDiscovery {
                         allMatched = true;
                         int seqStartAt = startAt;
                         foreach (var elem in sequence) {
-                            if (!elem.Match(chain, seqStartAt, out innerEndAt)) {
+                            if (!elem.Match(chain, parentToken, seqStartAt, out innerEndAt)) {
                                 allMatched = false;
                                 break;  // Failed to match this alternative sequence
                             }

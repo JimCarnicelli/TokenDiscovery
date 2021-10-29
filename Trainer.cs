@@ -33,6 +33,8 @@ namespace TokenDiscovery {
                     parser.RegisterLiteral(-1, "Space", " ");
                 } else if (i == '|') {
                     parser.RegisterLiteral(-1, "Pipe", "|");
+                } else if (i == '\'') {
+                    parser.RegisterLiteral(-1, "Apostrophe", "'");
                 } else {
                     string s = "" + (char)i;
                     parser.RegisterLiteral(-1, s, s);
@@ -67,7 +69,7 @@ namespace TokenDiscovery {
             // Pre-parse the raw text into a set of paragraphs with some text cleanup
 
             // Split on 2 or more newlines
-            sourceText = sourceText.Replace("\r\n", "\n");
+            sourceText = sourceText.Replace("\r\n", "\n").Replace("\r", "\n");
             while (sourceText.Contains("\n\n\n")) sourceText = sourceText.Replace("\n\n\n", "\n\n");
             Paragraphs = new List<string>();
             var rawParagraphs = sourceText.Split("\n\n");

@@ -91,7 +91,12 @@ namespace TokenDiscovery {
         }
 
         public Pattern RegisterExperiment(string patternText) {
+            return RegisterExperiment(null, patternText);
+        }
+
+        public Pattern RegisterExperiment(string name, string patternText) {
             if (PatternExists(patternText, out Pattern pattern)) return pattern;
+            pattern.Name = name;
             return Register(pattern);
         }
 
@@ -375,11 +380,18 @@ namespace TokenDiscovery {
                     Parse(chain, i, pattern);
                 }
             }
+
+            foreach (var head in chain.Heads[0].Values) {
+                if (head.Length == chain.Length) {
+                    chain.Tops.Add(head);
+                }
+            }
+
             return chain;
         }
 
         public void Parse(TokenChain chain, int startAt, Pattern pattern) {
-            pattern.Match(chain, startAt);
+            pattern.Match(chain, null, startAt);
         }
 
 

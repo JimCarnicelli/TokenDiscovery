@@ -132,14 +132,17 @@ namespace TokenDiscovery {
             return Root.DependsOn(otherPattern);
         }
 
-        public Token Match(TokenChain chain, int startAt) {
+        public Token Match(TokenChain chain, Token parentToken, int startAt) {
             Token token;
 
             if (startAt < 0) return null;
             if (startAt >= chain.Length) return null;
 
             // If it's already been found previously then don't bother trying again
-            if (chain.Heads[startAt].TryGetValue(Id, out token)) return token;
+            if (chain.Heads[startAt].TryGetValue(Id, out token)) {
+                if (parentToken != null) parentToken.Children.Add(token);
+                return token;
+            }
 
             // Literals are simple string matches
             if (Literal != null) {
@@ -151,8 +154,8 @@ namespace TokenDiscovery {
                 token.Length = snippet.Length;
 
             } else {
-                if (!Root.Match(chain, startAt, out int endAt)) return null;
                 token = new Token();
+                if (!Root.Match(chain, token, startAt, out int endAt)) return null;
                 token.StartAt = startAt;
                 token.Length = endAt - startAt;
                 token.Text = chain.Text.Substring(startAt, token.Length);
@@ -161,9 +164,11 @@ namespace TokenDiscovery {
 
             token.Pattern = this;
             chain.Heads[startAt][token.Pattern.Id] = token;
-            if (startAt + token.Length - 1 > 0) {
+            if (startAt + token.Length - 1 >= 0) {
                 chain.Tails[startAt + token.Length - 1][token.Pattern.Id] = token;
             }
+
+            if (parentToken != null) parentToken.Children.Add(token);
             return token;
         }
 

@@ -15,6 +15,8 @@ namespace TokenDiscovery {
 
         public Dictionary<int, Token>[] Tails;
 
+        public List<Token> Tops = new();
+
 
         #endregion
 
@@ -41,12 +43,12 @@ namespace TokenDiscovery {
                 var subText = "";
                 foreach (var token in Heads[i].Values) {
                     if (token.Pattern.Type < minType) continue;
-                    subText += "  " + token.Pattern.Identity + ": " + token.Text;
+                    subText += "  " + token.Pattern.Identity + ": '" + token.Text.Replace("'", "''") + "'";
                     if (token.Pattern.Name == null) subText += "  | " + token.Pattern.ToString();
                     subText += "\n";
                 }
                 if (subText != "" || includeEmpty) {
-                    text += "----------  " + i + "  -  " + Text[i] + "  ----------\n" + subText;
+                    text += "----------  " + i + "  -  " + (Text[i] == ' ' ? "' '" : Text[i]) + "  ----------\n" + subText;
                 }
             }
 

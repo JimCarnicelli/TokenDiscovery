@@ -1,3 +1,278 @@
-Eating too much salt can kill you. Excessive salt intake will cause an estimated 1.6 million deaths worldwide this year. Four out of five of these deaths will occur in low- and middle-income countries, and nearly half will be among people younger than 70.
+Eating less salt can save millions of lives. But reducing dietary salt intake has been difficult. Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren't many alternatives to salt that provide the same taste.
 
-<empty>
+----------  0  -  E  ----------
+  BasicWord: 'Eating'
+  Word: 'Eating'
+  Phrase: 'Eating less salt can save millions of lives'
+  Sentence: 'Eating less salt can save millions of lives. '
+  Paragraph: 'Eating less salt can save millions of lives. But reducing dietary salt intake has been difficult. Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste.'
+----------  6  -  ' '  ----------
+  WordSeparator: ' '
+----------  7  -  l  ----------
+  BasicWord: 'less'
+  Word: 'less'
+----------  11  -  ' '  ----------
+  WordSeparator: ' '
+----------  12  -  s  ----------
+  BasicWord: 'salt'
+  Word: 'salt'
+----------  16  -  ' '  ----------
+  WordSeparator: ' '
+----------  17  -  c  ----------
+  BasicWord: 'can'
+  Word: 'can'
+----------  20  -  ' '  ----------
+  WordSeparator: ' '
+----------  21  -  s  ----------
+  BasicWord: 'save'
+  Word: 'save'
+----------  25  -  ' '  ----------
+  WordSeparator: ' '
+----------  26  -  m  ----------
+  BasicWord: 'millions'
+  Word: 'millions'
+----------  34  -  ' '  ----------
+  WordSeparator: ' '
+----------  35  -  o  ----------
+  BasicWord: 'of'
+  Word: 'of'
+----------  37  -  ' '  ----------
+  WordSeparator: ' '
+----------  38  -  l  ----------
+  BasicWord: 'lives'
+  Word: 'lives'
+----------  44  -  ' '  ----------
+  WordSeparator: ' '
+----------  45  -  B  ----------
+  BasicWord: 'But'
+  Word: 'But'
+  Phrase: 'But reducing dietary salt intake has been difficult'
+  Sentence: 'But reducing dietary salt intake has been difficult. '
+----------  48  -  ' '  ----------
+  WordSeparator: ' '
+----------  49  -  r  ----------
+  BasicWord: 'reducing'
+  Word: 'reducing'
+----------  57  -  ' '  ----------
+  WordSeparator: ' '
+----------  58  -  d  ----------
+  BasicWord: 'dietary'
+  Word: 'dietary'
+----------  65  -  ' '  ----------
+  WordSeparator: ' '
+----------  66  -  s  ----------
+  BasicWord: 'salt'
+  Word: 'salt'
+----------  70  -  ' '  ----------
+  WordSeparator: ' '
+----------  71  -  i  ----------
+  BasicWord: 'intake'
+  Word: 'intake'
+----------  77  -  ' '  ----------
+  WordSeparator: ' '
+----------  78  -  h  ----------
+  BasicWord: 'has'
+  Word: 'has'
+----------  81  -  ' '  ----------
+  WordSeparator: ' '
+----------  82  -  b  ----------
+  BasicWord: 'been'
+  Word: 'been'
+----------  86  -  ' '  ----------
+  WordSeparator: ' '
+----------  87  -  d  ----------
+  BasicWord: 'difficult'
+  Word: 'difficult'
+----------  97  -  ' '  ----------
+  WordSeparator: ' '
+----------  98  -  F  ----------
+  BasicWord: 'Food'
+  Word: 'Food'
+  Phrase: 'Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste'
+  Sentence: 'Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste.'
+----------  102  -  ' '  ----------
+  WordSeparator: ' '
+----------  103  -  p  ----------
+  BasicWord: 'preferences'
+  Word: 'preferences'
+----------  114  -  ' '  ----------
+  WordSeparator: ' '
+----------  115  -  t  ----------
+  BasicWord: 'tend'
+  Word: 'tend'
+----------  119  -  ' '  ----------
+  WordSeparator: ' '
+----------  120  -  t  ----------
+  BasicWord: 'to'
+  Word: 'to'
+----------  122  -  ' '  ----------
+  WordSeparator: ' '
+----------  123  -  c  ----------
+  BasicWord: 'change'
+  Word: 'change'
+----------  129  -  ' '  ----------
+  WordSeparator: ' '
+----------  130  -  s  ----------
+  BasicWord: 'slowly'
+  Word: 'slowly'
+----------  136  -  ,  ----------
+  WordSeparator: ', '
+----------  137  -  ' '  ----------
+  WordSeparator: ' '
+----------  138  -  i  ----------
+  BasicWord: 'industry'
+  Word: 'industry'
+----------  146  -  ' '  ----------
+  WordSeparator: ' '
+----------  147  -  h  ----------
+  BasicWord: 'has'
+  Word: 'has'
+----------  150  -  ' '  ----------
+  WordSeparator: ' '
+----------  151  -  n  ----------
+  BasicWord: 'no'
+  Word: 'no'
+----------  153  -  ' '  ----------
+  WordSeparator: ' '
+----------  154  -  i  ----------
+  BasicWord: 'incentive'
+  Word: 'incentive'
+----------  163  -  ' '  ----------
+  WordSeparator: ' '
+----------  164  -  t  ----------
+  BasicWord: 'to'
+  Word: 'to'
+----------  166  -  ' '  ----------
+  WordSeparator: ' '
+----------  167  -  d  ----------
+  BasicWord: 'decrease'
+  Word: 'decrease'
+----------  175  -  ' '  ----------
+  WordSeparator: ' '
+----------  176  -  s  ----------
+  BasicWord: 'sodium'
+  Word: 'sodium'
+----------  182  -  ' '  ----------
+  WordSeparator: ' '
+----------  183  -  c  ----------
+  BasicWord: 'content'
+  Word: 'content'
+----------  190  -  ' '  ----------
+  WordSeparator: ' '
+----------  191  -  o  ----------
+  BasicWord: 'of'
+  Word: 'of'
+----------  193  -  ' '  ----------
+  WordSeparator: ' '
+----------  194  -  f  ----------
+  BasicWord: 'food'
+  Word: 'food'
+----------  198  -  -  ----------
+  Dash: '--'
+  WordSeparator: '--'
+----------  200  -  a  ----------
+  BasicWord: 'and'
+  Word: 'and'
+----------  203  -  ' '  ----------
+  WordSeparator: ' '
+----------  204  -  c  ----------
+  BasicWord: 'considerable'
+  Word: 'considerable'
+----------  216  -  ' '  ----------
+  WordSeparator: ' '
+----------  217  -  i  ----------
+  BasicWord: 'incentives'
+  Word: 'incentives'
+----------  227  -  ' '  ----------
+  WordSeparator: ' '
+----------  228  -  t  ----------
+  BasicWord: 'to'
+  Word: 'to'
+----------  230  -  ' '  ----------
+  WordSeparator: ' '
+----------  231  -  m  ----------
+  BasicWord: 'maintain'
+  Word: 'maintain'
+----------  239  -  ' '  ----------
+  WordSeparator: ' '
+----------  240  -  o  ----------
+  BasicWord: 'or'
+  Word: 'or'
+----------  242  -  ' '  ----------
+  WordSeparator: ' '
+----------  243  -  i  ----------
+  BasicWord: 'increase'
+  Word: 'increase'
+----------  251  -  ' '  ----------
+  WordSeparator: ' '
+----------  252  -  i  ----------
+  BasicWord: 'it'
+  Word: 'it'
+----------  254  -  -  ----------
+  Dash: '--'
+  WordSeparator: '--'
+----------  256  -  a  ----------
+  BasicWord: 'and'
+  Word: 'and'
+----------  259  -  ' '  ----------
+  WordSeparator: ' '
+----------  260  -  t  ----------
+  BasicWord: 'there'
+  Word: 'there'
+----------  265  -  ' '  ----------
+  WordSeparator: ' '
+----------  266  -  a  ----------
+  BasicWord: 'aren'
+  ApostrophedWord: 'aren''t'
+  Word: 'aren''t'
+----------  271  -  t  ----------
+  BasicWord: 't'
+  Word: 't'
+  Phrase: 't many alternatives to salt that provide the same taste'
+  Sentence: 't many alternatives to salt that provide the same taste.'
+  Paragraph: 't many alternatives to salt that provide the same taste.'
+----------  272  -  ' '  ----------
+  WordSeparator: ' '
+----------  273  -  m  ----------
+  BasicWord: 'many'
+  Word: 'many'
+----------  277  -  ' '  ----------
+  WordSeparator: ' '
+----------  278  -  a  ----------
+  BasicWord: 'alternatives'
+  Word: 'alternatives'
+----------  290  -  ' '  ----------
+  WordSeparator: ' '
+----------  291  -  t  ----------
+  BasicWord: 'to'
+  Word: 'to'
+----------  293  -  ' '  ----------
+  WordSeparator: ' '
+----------  294  -  s  ----------
+  BasicWord: 'salt'
+  Word: 'salt'
+----------  298  -  ' '  ----------
+  WordSeparator: ' '
+----------  299  -  t  ----------
+  BasicWord: 'that'
+  Word: 'that'
+----------  303  -  ' '  ----------
+  WordSeparator: ' '
+----------  304  -  p  ----------
+  BasicWord: 'provide'
+  Word: 'provide'
+----------  311  -  ' '  ----------
+  WordSeparator: ' '
+----------  312  -  t  ----------
+  BasicWord: 'the'
+  Word: 'the'
+----------  315  -  ' '  ----------
+  WordSeparator: ' '
+----------  316  -  s  ----------
+  BasicWord: 'same'
+  Word: 'same'
+----------  320  -  ' '  ----------
+  WordSeparator: ' '
+----------  321  -  t  ----------
+  BasicWord: 'taste'
+  Word: 'taste'

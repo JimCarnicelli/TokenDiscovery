@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace TokenDiscovery {
 
@@ -13,11 +10,20 @@ namespace TokenDiscovery {
 
         public Pattern Pattern;
 
+        [JsonPropertyName("Pattern")]
+        public string PatternName {
+            get {
+                return Pattern.Identity;
+            }
+        }
+
         public int StartAt;
 
         public int Length;
 
-        public string Text;
+        public string Text { get; set; }
+
+        public List<Token> Children { get; set; } = new List<Token>();
 
         public override string ToString() {
             return Pattern + " >> (" + StartAt + " - " + (StartAt + Length) + ") '" + Text + "'";
