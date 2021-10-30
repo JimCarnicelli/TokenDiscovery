@@ -133,4 +133,4 @@ Id | Name | Type >>  Pattern
 131 | WordSeparator | Experimental >>  ',' Space | ';' Space | ':' Space | Dash | Space
 132 | Phrase | Experimental >>  <WordSeparator! (Word WordSeparator)* Word
 133 | Sentence | Experimental >>  Phrase '.' Space?
-134 | Paragraph | Experimental >>  <Sentence! Sentence+
+134 |  | Experimental >>  <Sentence! Sentence+

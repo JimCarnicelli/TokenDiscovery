@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace TokenDiscovery {
@@ -11,9 +12,9 @@ namespace TokenDiscovery {
         public Pattern Pattern;
 
         [JsonPropertyName("Pattern")]
-        public string PatternName {
+        public string PatternDescription {
             get {
-                return Pattern.Identity;
+                return Pattern.ToString();
             }
         }
 
@@ -23,7 +24,17 @@ namespace TokenDiscovery {
 
         public string Text { get; set; }
 
-        public List<Token> Children { get; set; } = new List<Token>();
+        public List<Token> Children = new List<Token>();
+
+        [JsonPropertyName("Children")]
+        public List<Token> ChildrenForJson {
+            get {
+                if (Children.Where(e => e.Pattern.Type >= PatternType.Derived).Any()) {
+                    return Children;
+                }
+                return null;
+            }
+        }
 
         public override string ToString() {
             return Pattern + " >> (" + StartAt + " - " + (StartAt + Length) + ") '" + Text + "'";

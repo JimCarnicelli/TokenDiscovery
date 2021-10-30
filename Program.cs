@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace TokenDiscovery {
@@ -20,16 +21,16 @@ namespace TokenDiscovery {
 
             trainer.ImportSourceText(sourceText);
 
-            trainer.parser.RegisterExperiment("BasicWord",       "<Letter! Letter+");
-            trainer.parser.RegisterExperiment("Number",          "<(Digit | '.')! '-'? Digit+ ('.' Digit+)?");
-            trainer.parser.RegisterExperiment("Percent",         "Number '%'");
-            trainer.parser.RegisterExperiment("ApostrophedWord", "BasicWord Apostrophe BasicWord");
-            trainer.parser.RegisterExperiment("Word",            "ApostrophedWord | BasicWord | Number | Percent");
-            trainer.parser.RegisterExperiment("Dash",            "Space '-'{2} Space | Space '-' Space | <'-'! '-'{2} | <'-'! '-'");
-            trainer.parser.RegisterExperiment("WordSeparator",   "',' Space | ';' Space | ':' Space | Dash | Space");
-            trainer.parser.RegisterExperiment("Phrase",          "<WordSeparator! (Word WordSeparator)* Word");
-            trainer.parser.RegisterExperiment("Sentence",        "Phrase '.' Space?");
-            trainer.parser.RegisterExperiment("Paragraph",       "<Sentence! Sentence+");
+            trainer.parser.RegisterExperiment("BasicWord",          "<Letter! Letter+");
+            trainer.parser.RegisterExperiment("Number",             "<(Digit | '.')! '-'? Digit+ ('.' Digit+)?");
+            trainer.parser.RegisterExperiment("Percent",            "Number '%'");
+            trainer.parser.RegisterExperiment("ApostrophedWord",    "BasicWord Apostrophe BasicWord");
+            trainer.parser.RegisterExperiment("Word",               "ApostrophedWord | BasicWord | Number | Percent");
+            trainer.parser.RegisterExperiment("Dash",               "Space '-'{2} Space | Space '-' Space | <'-'! '-'{2} | <'-'! '-'");
+            trainer.parser.RegisterExperiment("WordSeparator",      "',' Space | ';' Space | ':' Space | Dash | Space");
+            trainer.parser.RegisterExperiment("Phrase",             "<WordSeparator! (Word WordSeparator)* Word");
+            trainer.parser.RegisterExperiment("Sentence",           "Phrase '.' Space?");
+            trainer.parser.RegisterExperiment("Paragraph",          "<Sentence! Sentence+");
 
             trainer.Iterations = 2;
             trainer.Train();
@@ -57,9 +58,9 @@ namespace TokenDiscovery {
             if (chain.Tops.Count > 0) {
                 File.WriteAllText(dataPath + "TokenTree.json",
                     "{\n" +
-                    "  \"SourceText\": " + JsonSerializer.Serialize(paragraph) + ",\n" +
+                    "  \"SourceText\": " + JsonSerialize(paragraph) + ",\n" +
                     "  \"Root\":\n\n" +
-                    JsonSerializer.Serialize(chain.Tops[0], new JsonSerializerOptions { WriteIndented = true }) +
+                    JsonSerialize(chain.Tops[0]) +
                     "\n\n}\n"
                 );
             }
@@ -87,6 +88,13 @@ namespace TokenDiscovery {
                 path += "//Data//";
             }
             return path;
+        }
+
+        private static string JsonSerialize(object obj) {
+            return JsonSerializer.Serialize(obj, new JsonSerializerOptions {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            });
         }
 
     }

@@ -5,7 +5,7 @@ Eating less salt can save millions of lives. But reducing dietary salt intake ha
   Word: 'Eating'
   Phrase: 'Eating less salt can save millions of lives'
   Sentence: 'Eating less salt can save millions of lives. '
-  Paragraph: 'Eating less salt can save millions of lives. But reducing dietary salt intake has been difficult. Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste.'
+  [134]: 'Eating less salt can save millions of lives. But reducing dietary salt intake has been difficult. Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste.'  | <Sentence! Sentence+
 ----------  6  -  ' '  ----------
   WordSeparator: ' '
 ----------  7  -  l  ----------
@@ -230,7 +230,7 @@ Eating less salt can save millions of lives. But reducing dietary salt intake ha
   Word: 't'
   Phrase: 't many alternatives to salt that provide the same taste'
   Sentence: 't many alternatives to salt that provide the same taste.'
-  Paragraph: 't many alternatives to salt that provide the same taste.'
+  [134]: 't many alternatives to salt that provide the same taste.'  | <Sentence! Sentence+
 ----------  272  -  ' '  ----------
   WordSeparator: ' '
 ----------  273  -  m  ----------
