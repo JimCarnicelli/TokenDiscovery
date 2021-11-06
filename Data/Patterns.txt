@@ -124,13 +124,13 @@ Id | Name | Type >>  Pattern
 122 | Lowercase | Basics >>  a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
 123 | Letter | Basics >>  Uppercase | Lowercase
 124 | Digit | Basics >>  '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-125 | BasicWord | Experimental >>  <Letter! Letter+
-126 | Number | Experimental >>  <(Digit | '.')! '-'? Digit+ ('.' Digit+)?
-127 | Percent | Experimental >>  Number '%'
-128 | ApostrophedWord | Experimental >>  BasicWord Apostrophe BasicWord
-129 | Word | Experimental >>  ApostrophedWord | BasicWord | Number | Percent
-130 | Dash | Experimental >>  Space '-'{2} Space | Space '-' Space | <'-'! '-'{2} | <'-'! '-'
-131 | WordSeparator | Experimental >>  ',' Space | ';' Space | ':' Space | Dash | Space
-132 | Phrase | Experimental >>  <WordSeparator! (Word WordSeparator)* Word
-133 | Sentence | Experimental >>  Phrase '.' Space?
-134 |  | Experimental >>  <Sentence! Sentence+
+125 | Letters | Experimental >>  <Letter! Letter+
+126 |  | Experimental >>  <Lowercase! Lowercase+
+127 |  | Experimental >>  (Letters Space)+
+128 | Words | Experimental >>  Letters (Space Letters)*
+129 | Period | Experimental >>  '.' Space
+130 |  | Experimental >>  <l! l+
+131 |  | Experimental >>  ((<Lowercase! Lowercase+) Space)+
+132 |  | Experimental >>  (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+133 |  | Experimental >>  <Ll! Ll+
+134 |  | Experimental >>  (((Letters Space)+) Letters)+
