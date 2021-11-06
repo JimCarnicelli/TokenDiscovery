@@ -1,278 +1,360 @@
-Eating less salt can save millions of lives. But reducing dietary salt intake has been difficult. Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren't many alternatives to salt that provide the same taste.
+Eating too much salt can kill you. Excessive salt intake will cause an estimated 1.6 million deaths worldwide this year. Four out of five of these deaths will occur in low- and middle-income countries, and nearly half will be among people younger than 70.
 
 ----------  0  -  E  ----------
-  BasicWord: 'Eating'
-  Word: 'Eating'
-  Phrase: 'Eating less salt can save millions of lives'
-  Sentence: 'Eating less salt can save millions of lives. '
-  [134]: 'Eating less salt can save millions of lives. But reducing dietary salt intake has been difficult. Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste.'  | <Sentence! Sentence+
-----------  6  -  ' '  ----------
-  WordSeparator: ' '
-----------  7  -  l  ----------
-  BasicWord: 'less'
-  Word: 'less'
-----------  11  -  ' '  ----------
-  WordSeparator: ' '
-----------  12  -  s  ----------
-  BasicWord: 'salt'
-  Word: 'salt'
-----------  16  -  ' '  ----------
-  WordSeparator: ' '
-----------  17  -  c  ----------
-  BasicWord: 'can'
-  Word: 'can'
-----------  20  -  ' '  ----------
-  WordSeparator: ' '
-----------  21  -  s  ----------
-  BasicWord: 'save'
-  Word: 'save'
-----------  25  -  ' '  ----------
-  WordSeparator: ' '
-----------  26  -  m  ----------
-  BasicWord: 'millions'
-  Word: 'millions'
-----------  34  -  ' '  ----------
-  WordSeparator: ' '
-----------  35  -  o  ----------
-  BasicWord: 'of'
-  Word: 'of'
-----------  37  -  ' '  ----------
-  WordSeparator: ' '
-----------  38  -  l  ----------
-  BasicWord: 'lives'
-  Word: 'lives'
-----------  44  -  ' '  ----------
-  WordSeparator: ' '
-----------  45  -  B  ----------
-  BasicWord: 'But'
-  Word: 'But'
-  Phrase: 'But reducing dietary salt intake has been difficult'
-  Sentence: 'But reducing dietary salt intake has been difficult. '
-----------  48  -  ' '  ----------
-  WordSeparator: ' '
-----------  49  -  r  ----------
-  BasicWord: 'reducing'
-  Word: 'reducing'
-----------  57  -  ' '  ----------
-  WordSeparator: ' '
-----------  58  -  d  ----------
-  BasicWord: 'dietary'
-  Word: 'dietary'
-----------  65  -  ' '  ----------
-  WordSeparator: ' '
-----------  66  -  s  ----------
-  BasicWord: 'salt'
-  Word: 'salt'
-----------  70  -  ' '  ----------
-  WordSeparator: ' '
-----------  71  -  i  ----------
-  BasicWord: 'intake'
-  Word: 'intake'
-----------  77  -  ' '  ----------
-  WordSeparator: ' '
-----------  78  -  h  ----------
-  BasicWord: 'has'
-  Word: 'has'
-----------  81  -  ' '  ----------
-  WordSeparator: ' '
-----------  82  -  b  ----------
-  BasicWord: 'been'
-  Word: 'been'
-----------  86  -  ' '  ----------
-  WordSeparator: ' '
-----------  87  -  d  ----------
-  BasicWord: 'difficult'
-  Word: 'difficult'
-----------  97  -  ' '  ----------
-  WordSeparator: ' '
-----------  98  -  F  ----------
-  BasicWord: 'Food'
-  Word: 'Food'
-  Phrase: 'Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste'
-  Sentence: 'Food preferences tend to change slowly, industry has no incentive to decrease sodium content of food--and considerable incentives to maintain or increase it--and there aren''t many alternatives to salt that provide the same taste.'
-----------  102  -  ' '  ----------
-  WordSeparator: ' '
-----------  103  -  p  ----------
-  BasicWord: 'preferences'
-  Word: 'preferences'
-----------  114  -  ' '  ----------
-  WordSeparator: ' '
-----------  115  -  t  ----------
-  BasicWord: 'tend'
-  Word: 'tend'
-----------  119  -  ' '  ----------
-  WordSeparator: ' '
-----------  120  -  t  ----------
-  BasicWord: 'to'
-  Word: 'to'
-----------  122  -  ' '  ----------
-  WordSeparator: ' '
-----------  123  -  c  ----------
-  BasicWord: 'change'
-  Word: 'change'
-----------  129  -  ' '  ----------
-  WordSeparator: ' '
-----------  130  -  s  ----------
-  BasicWord: 'slowly'
-  Word: 'slowly'
-----------  136  -  ,  ----------
-  WordSeparator: ', '
-----------  137  -  ' '  ----------
-  WordSeparator: ' '
-----------  138  -  i  ----------
-  BasicWord: 'industry'
-  Word: 'industry'
-----------  146  -  ' '  ----------
-  WordSeparator: ' '
-----------  147  -  h  ----------
-  BasicWord: 'has'
-  Word: 'has'
-----------  150  -  ' '  ----------
-  WordSeparator: ' '
-----------  151  -  n  ----------
-  BasicWord: 'no'
-  Word: 'no'
-----------  153  -  ' '  ----------
-  WordSeparator: ' '
-----------  154  -  i  ----------
-  BasicWord: 'incentive'
-  Word: 'incentive'
-----------  163  -  ' '  ----------
-  WordSeparator: ' '
-----------  164  -  t  ----------
-  BasicWord: 'to'
-  Word: 'to'
-----------  166  -  ' '  ----------
-  WordSeparator: ' '
-----------  167  -  d  ----------
-  BasicWord: 'decrease'
-  Word: 'decrease'
-----------  175  -  ' '  ----------
-  WordSeparator: ' '
-----------  176  -  s  ----------
-  BasicWord: 'sodium'
-  Word: 'sodium'
-----------  182  -  ' '  ----------
-  WordSeparator: ' '
-----------  183  -  c  ----------
-  BasicWord: 'content'
-  Word: 'content'
-----------  190  -  ' '  ----------
-  WordSeparator: ' '
-----------  191  -  o  ----------
-  BasicWord: 'of'
-  Word: 'of'
-----------  193  -  ' '  ----------
-  WordSeparator: ' '
-----------  194  -  f  ----------
-  BasicWord: 'food'
-  Word: 'food'
-----------  198  -  -  ----------
-  Dash: '--'
-  WordSeparator: '--'
-----------  200  -  a  ----------
-  BasicWord: 'and'
-  Word: 'and'
-----------  203  -  ' '  ----------
-  WordSeparator: ' '
-----------  204  -  c  ----------
-  BasicWord: 'considerable'
-  Word: 'considerable'
-----------  216  -  ' '  ----------
-  WordSeparator: ' '
-----------  217  -  i  ----------
-  BasicWord: 'incentives'
-  Word: 'incentives'
-----------  227  -  ' '  ----------
-  WordSeparator: ' '
-----------  228  -  t  ----------
-  BasicWord: 'to'
-  Word: 'to'
-----------  230  -  ' '  ----------
-  WordSeparator: ' '
-----------  231  -  m  ----------
-  BasicWord: 'maintain'
-  Word: 'maintain'
-----------  239  -  ' '  ----------
-  WordSeparator: ' '
-----------  240  -  o  ----------
-  BasicWord: 'or'
-  Word: 'or'
-----------  242  -  ' '  ----------
-  WordSeparator: ' '
-----------  243  -  i  ----------
-  BasicWord: 'increase'
-  Word: 'increase'
-----------  251  -  ' '  ----------
-  WordSeparator: ' '
-----------  252  -  i  ----------
-  BasicWord: 'it'
-  Word: 'it'
-----------  254  -  -  ----------
-  Dash: '--'
-  WordSeparator: '--'
-----------  256  -  a  ----------
-  BasicWord: 'and'
-  Word: 'and'
-----------  259  -  ' '  ----------
-  WordSeparator: ' '
-----------  260  -  t  ----------
-  BasicWord: 'there'
-  Word: 'there'
-----------  265  -  ' '  ----------
-  WordSeparator: ' '
-----------  266  -  a  ----------
-  BasicWord: 'aren'
-  ApostrophedWord: 'aren''t'
-  Word: 'aren''t'
-----------  271  -  t  ----------
-  BasicWord: 't'
-  Word: 't'
-  Phrase: 't many alternatives to salt that provide the same taste'
-  Sentence: 't many alternatives to salt that provide the same taste.'
-  [134]: 't many alternatives to salt that provide the same taste.'  | <Sentence! Sentence+
-----------  272  -  ' '  ----------
-  WordSeparator: ' '
-----------  273  -  m  ----------
-  BasicWord: 'many'
-  Word: 'many'
-----------  277  -  ' '  ----------
-  WordSeparator: ' '
-----------  278  -  a  ----------
-  BasicWord: 'alternatives'
-  Word: 'alternatives'
-----------  290  -  ' '  ----------
-  WordSeparator: ' '
-----------  291  -  t  ----------
-  BasicWord: 'to'
-  Word: 'to'
-----------  293  -  ' '  ----------
-  WordSeparator: ' '
-----------  294  -  s  ----------
-  BasicWord: 'salt'
-  Word: 'salt'
-----------  298  -  ' '  ----------
-  WordSeparator: ' '
-----------  299  -  t  ----------
-  BasicWord: 'that'
-  Word: 'that'
-----------  303  -  ' '  ----------
-  WordSeparator: ' '
-----------  304  -  p  ----------
-  BasicWord: 'provide'
-  Word: 'provide'
-----------  311  -  ' '  ----------
-  WordSeparator: ' '
-----------  312  -  t  ----------
-  BasicWord: 'the'
-  Word: 'the'
-----------  315  -  ' '  ----------
-  WordSeparator: ' '
-----------  316  -  s  ----------
-  BasicWord: 'same'
-  Word: 'same'
-----------  320  -  ' '  ----------
-  WordSeparator: ' '
-----------  321  -  t  ----------
-  BasicWord: 'taste'
-  Word: 'taste'
+  Letters: 'Eating'
+  [127]: 'Eating too much salt can kill '  | (Letters Space)+
+  Words: 'Eating too much salt can kill you'
+  [134]: 'Eating too much salt can kill you'  | (((Letters Space)+) Letters)+
+----------  1  -  a  ----------
+  [126]: 'ating'  | <Lowercase! Lowercase+
+  [131]: 'ating too much salt can kill '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'ating too much salt can kill you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  7  -  t  ----------
+  Letters: 'too'
+  [126]: 'too'  | <Lowercase! Lowercase+
+  [127]: 'too much salt can kill '  | (Letters Space)+
+  Words: 'too much salt can kill you'
+  [131]: 'too much salt can kill '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'too much salt can kill you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'too much salt can kill you'  | (((Letters Space)+) Letters)+
+----------  11  -  m  ----------
+  Letters: 'much'
+  [126]: 'much'  | <Lowercase! Lowercase+
+  [127]: 'much salt can kill '  | (Letters Space)+
+  Words: 'much salt can kill you'
+  [131]: 'much salt can kill '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'much salt can kill you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'much salt can kill you'  | (((Letters Space)+) Letters)+
+----------  16  -  s  ----------
+  Letters: 'salt'
+  [126]: 'salt'  | <Lowercase! Lowercase+
+  [127]: 'salt can kill '  | (Letters Space)+
+  Words: 'salt can kill you'
+  [131]: 'salt can kill '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'salt can kill you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'salt can kill you'  | (((Letters Space)+) Letters)+
+----------  18  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  21  -  c  ----------
+  Letters: 'can'
+  [126]: 'can'  | <Lowercase! Lowercase+
+  [127]: 'can kill '  | (Letters Space)+
+  Words: 'can kill you'
+  [131]: 'can kill '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'can kill you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'can kill you'  | (((Letters Space)+) Letters)+
+----------  25  -  k  ----------
+  Letters: 'kill'
+  [126]: 'kill'  | <Lowercase! Lowercase+
+  [127]: 'kill '  | (Letters Space)+
+  Words: 'kill you'
+  [131]: 'kill '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'kill you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'kill you'  | (((Letters Space)+) Letters)+
+----------  27  -  l  ----------
+  [130]: 'll'  | <l! l+
+  [133]: 'll'  | <Ll! Ll+
+----------  30  -  y  ----------
+  Letters: 'you'
+  [126]: 'you'  | <Lowercase! Lowercase+
+  Words: 'you'
+  [132]: 'you'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  33  -  .  ----------
+  Period: '. '
+----------  35  -  E  ----------
+  Letters: 'Excessive'
+  [127]: 'Excessive salt intake will cause an estimated '  | (Letters Space)+
+  Words: 'Excessive salt intake will cause an estimated'
+----------  36  -  x  ----------
+  [126]: 'xcessive'  | <Lowercase! Lowercase+
+  [131]: 'xcessive salt intake will cause an estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'xcessive salt intake will cause an estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  45  -  s  ----------
+  Letters: 'salt'
+  [126]: 'salt'  | <Lowercase! Lowercase+
+  [127]: 'salt intake will cause an estimated '  | (Letters Space)+
+  Words: 'salt intake will cause an estimated'
+  [131]: 'salt intake will cause an estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'salt intake will cause an estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  47  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  50  -  i  ----------
+  Letters: 'intake'
+  [126]: 'intake'  | <Lowercase! Lowercase+
+  [127]: 'intake will cause an estimated '  | (Letters Space)+
+  Words: 'intake will cause an estimated'
+  [131]: 'intake will cause an estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'intake will cause an estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  57  -  w  ----------
+  Letters: 'will'
+  [126]: 'will'  | <Lowercase! Lowercase+
+  [127]: 'will cause an estimated '  | (Letters Space)+
+  Words: 'will cause an estimated'
+  [131]: 'will cause an estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'will cause an estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  59  -  l  ----------
+  [130]: 'll'  | <l! l+
+  [133]: 'll'  | <Ll! Ll+
+----------  62  -  c  ----------
+  Letters: 'cause'
+  [126]: 'cause'  | <Lowercase! Lowercase+
+  [127]: 'cause an estimated '  | (Letters Space)+
+  Words: 'cause an estimated'
+  [131]: 'cause an estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'cause an estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  68  -  a  ----------
+  Letters: 'an'
+  [126]: 'an'  | <Lowercase! Lowercase+
+  [127]: 'an estimated '  | (Letters Space)+
+  Words: 'an estimated'
+  [131]: 'an estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'an estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  71  -  e  ----------
+  Letters: 'estimated'
+  [126]: 'estimated'  | <Lowercase! Lowercase+
+  [127]: 'estimated '  | (Letters Space)+
+  Words: 'estimated'
+  [131]: 'estimated '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'estimated'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  85  -  m  ----------
+  Letters: 'million'
+  [126]: 'million'  | <Lowercase! Lowercase+
+  [127]: 'million deaths worldwide this '  | (Letters Space)+
+  Words: 'million deaths worldwide this year'
+  [131]: 'million deaths worldwide this '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'million deaths worldwide this year'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'million deaths worldwide this year'  | (((Letters Space)+) Letters)+
+----------  87  -  l  ----------
+  [130]: 'll'  | <l! l+
+  [133]: 'll'  | <Ll! Ll+
+----------  93  -  d  ----------
+  Letters: 'deaths'
+  [126]: 'deaths'  | <Lowercase! Lowercase+
+  [127]: 'deaths worldwide this '  | (Letters Space)+
+  Words: 'deaths worldwide this year'
+  [131]: 'deaths worldwide this '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'deaths worldwide this year'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'deaths worldwide this year'  | (((Letters Space)+) Letters)+
+----------  100  -  w  ----------
+  Letters: 'worldwide'
+  [126]: 'worldwide'  | <Lowercase! Lowercase+
+  [127]: 'worldwide this '  | (Letters Space)+
+  Words: 'worldwide this year'
+  [131]: 'worldwide this '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'worldwide this year'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'worldwide this year'  | (((Letters Space)+) Letters)+
+----------  103  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  110  -  t  ----------
+  Letters: 'this'
+  [126]: 'this'  | <Lowercase! Lowercase+
+  [127]: 'this '  | (Letters Space)+
+  Words: 'this year'
+  [131]: 'this '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'this year'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'this year'  | (((Letters Space)+) Letters)+
+----------  115  -  y  ----------
+  Letters: 'year'
+  [126]: 'year'  | <Lowercase! Lowercase+
+  Words: 'year'
+  [132]: 'year'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  119  -  .  ----------
+  Period: '. '
+----------  121  -  F  ----------
+  Letters: 'Four'
+  [127]: 'Four out of five of these deaths will occur in '  | (Letters Space)+
+  Words: 'Four out of five of these deaths will occur in low'
+  [134]: 'Four out of five of these deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  122  -  o  ----------
+  [126]: 'our'  | <Lowercase! Lowercase+
+  [131]: 'our out of five of these deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'our out of five of these deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  126  -  o  ----------
+  Letters: 'out'
+  [126]: 'out'  | <Lowercase! Lowercase+
+  [127]: 'out of five of these deaths will occur in '  | (Letters Space)+
+  Words: 'out of five of these deaths will occur in low'
+  [131]: 'out of five of these deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'out of five of these deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'out of five of these deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  130  -  o  ----------
+  Letters: 'of'
+  [126]: 'of'  | <Lowercase! Lowercase+
+  [127]: 'of five of these deaths will occur in '  | (Letters Space)+
+  Words: 'of five of these deaths will occur in low'
+  [131]: 'of five of these deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'of five of these deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'of five of these deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  133  -  f  ----------
+  Letters: 'five'
+  [126]: 'five'  | <Lowercase! Lowercase+
+  [127]: 'five of these deaths will occur in '  | (Letters Space)+
+  Words: 'five of these deaths will occur in low'
+  [131]: 'five of these deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'five of these deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'five of these deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  138  -  o  ----------
+  Letters: 'of'
+  [126]: 'of'  | <Lowercase! Lowercase+
+  [127]: 'of these deaths will occur in '  | (Letters Space)+
+  Words: 'of these deaths will occur in low'
+  [131]: 'of these deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'of these deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'of these deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  141  -  t  ----------
+  Letters: 'these'
+  [126]: 'these'  | <Lowercase! Lowercase+
+  [127]: 'these deaths will occur in '  | (Letters Space)+
+  Words: 'these deaths will occur in low'
+  [131]: 'these deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'these deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'these deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  147  -  d  ----------
+  Letters: 'deaths'
+  [126]: 'deaths'  | <Lowercase! Lowercase+
+  [127]: 'deaths will occur in '  | (Letters Space)+
+  Words: 'deaths will occur in low'
+  [131]: 'deaths will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'deaths will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'deaths will occur in low'  | (((Letters Space)+) Letters)+
+----------  154  -  w  ----------
+  Letters: 'will'
+  [126]: 'will'  | <Lowercase! Lowercase+
+  [127]: 'will occur in '  | (Letters Space)+
+  Words: 'will occur in low'
+  [131]: 'will occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'will occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'will occur in low'  | (((Letters Space)+) Letters)+
+----------  156  -  l  ----------
+  [130]: 'll'  | <l! l+
+  [133]: 'll'  | <Ll! Ll+
+----------  159  -  o  ----------
+  Letters: 'occur'
+  [126]: 'occur'  | <Lowercase! Lowercase+
+  [127]: 'occur in '  | (Letters Space)+
+  Words: 'occur in low'
+  [131]: 'occur in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'occur in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'occur in low'  | (((Letters Space)+) Letters)+
+----------  165  -  i  ----------
+  Letters: 'in'
+  [126]: 'in'  | <Lowercase! Lowercase+
+  [127]: 'in '  | (Letters Space)+
+  Words: 'in low'
+  [131]: 'in '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'in low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'in low'  | (((Letters Space)+) Letters)+
+----------  168  -  l  ----------
+  Letters: 'low'
+  [126]: 'low'  | <Lowercase! Lowercase+
+  Words: 'low'
+  [130]: 'l'  | <l! l+
+  [132]: 'low'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [133]: 'l'  | <Ll! Ll+
+----------  173  -  a  ----------
+  Letters: 'and'
+  [126]: 'and'  | <Lowercase! Lowercase+
+  [127]: 'and '  | (Letters Space)+
+  Words: 'and middle'
+  [131]: 'and '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'and middle'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'and middle'  | (((Letters Space)+) Letters)+
+----------  177  -  m  ----------
+  Letters: 'middle'
+  [126]: 'middle'  | <Lowercase! Lowercase+
+  Words: 'middle'
+  [132]: 'middle'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  181  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  184  -  i  ----------
+  Letters: 'income'
+  [126]: 'income'  | <Lowercase! Lowercase+
+  [127]: 'income '  | (Letters Space)+
+  Words: 'income countries'
+  [131]: 'income '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'income countries'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+  [134]: 'income countries'  | (((Letters Space)+) Letters)+
+----------  191  -  c  ----------
+  Letters: 'countries'
+  [126]: 'countries'  | <Lowercase! Lowercase+
+  Words: 'countries'
+  [132]: 'countries'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  202  -  a  ----------
+  Letters: 'and'
+  [126]: 'and'  | <Lowercase! Lowercase+
+  [127]: 'and nearly half will be among people younger than '  | (Letters Space)+
+  Words: 'and nearly half will be among people younger than'
+  [131]: 'and nearly half will be among people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'and nearly half will be among people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  206  -  n  ----------
+  Letters: 'nearly'
+  [126]: 'nearly'  | <Lowercase! Lowercase+
+  [127]: 'nearly half will be among people younger than '  | (Letters Space)+
+  Words: 'nearly half will be among people younger than'
+  [131]: 'nearly half will be among people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'nearly half will be among people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  210  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  213  -  h  ----------
+  Letters: 'half'
+  [126]: 'half'  | <Lowercase! Lowercase+
+  [127]: 'half will be among people younger than '  | (Letters Space)+
+  Words: 'half will be among people younger than'
+  [131]: 'half will be among people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'half will be among people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  215  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  218  -  w  ----------
+  Letters: 'will'
+  [126]: 'will'  | <Lowercase! Lowercase+
+  [127]: 'will be among people younger than '  | (Letters Space)+
+  Words: 'will be among people younger than'
+  [131]: 'will be among people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'will be among people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  220  -  l  ----------
+  [130]: 'll'  | <l! l+
+  [133]: 'll'  | <Ll! Ll+
+----------  223  -  b  ----------
+  Letters: 'be'
+  [126]: 'be'  | <Lowercase! Lowercase+
+  [127]: 'be among people younger than '  | (Letters Space)+
+  Words: 'be among people younger than'
+  [131]: 'be among people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'be among people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  226  -  a  ----------
+  Letters: 'among'
+  [126]: 'among'  | <Lowercase! Lowercase+
+  [127]: 'among people younger than '  | (Letters Space)+
+  Words: 'among people younger than'
+  [131]: 'among people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'among people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  232  -  p  ----------
+  Letters: 'people'
+  [126]: 'people'  | <Lowercase! Lowercase+
+  [127]: 'people younger than '  | (Letters Space)+
+  Words: 'people younger than'
+  [131]: 'people younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'people younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  236  -  l  ----------
+  [130]: 'l'  | <l! l+
+  [133]: 'l'  | <Ll! Ll+
+----------  239  -  y  ----------
+  Letters: 'younger'
+  [126]: 'younger'  | <Lowercase! Lowercase+
+  [127]: 'younger than '  | (Letters Space)+
+  Words: 'younger than'
+  [131]: 'younger than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'younger than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*
+----------  247  -  t  ----------
+  Letters: 'than'
+  [126]: 'than'  | <Lowercase! Lowercase+
+  [127]: 'than '  | (Letters Space)+
+  Words: 'than'
+  [131]: 'than '  | ((<Lowercase! Lowercase+) Space)+
+  [132]: 'than'  | (<Lowercase! Lowercase+) (Space (<Lowercase! Lowercase+))*

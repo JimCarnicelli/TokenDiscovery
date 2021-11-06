@@ -96,8 +96,23 @@ namespace TokenDiscovery {
 
         public Pattern RegisterExperiment(string name, string patternText) {
             if (PatternExists(patternText, out Pattern pattern)) return pattern;
+            pattern = NewPattern(name, PatternType.Experimental, patternText);
             pattern.Name = name;
             return Register(pattern);
+        }
+
+        public void Rename(string name, Pattern pattern) {
+            var keyValue = PatternsByName.Where(e => e.Value == pattern).FirstOrDefault();
+            if (keyValue.Key != null) PatternsByName.Remove(keyValue.Key);
+            pattern.Name = name;
+            PatternsByName[name] = pattern;
+        }
+
+        public void Rename(string name, string patternText) {
+            var pattern = Patterns.Values
+                .Where(e => e.Name == null && e.Describe() == patternText)
+                .FirstOrDefault();
+            if (pattern != null) Rename(name, pattern);
         }
 
         public Pattern NewPattern(PatternType patternType, string patternText) {
@@ -111,6 +126,23 @@ namespace TokenDiscovery {
 
         public Pattern NewPattern(string patternText) {
             return NewPattern(null, PatternType.Experimental, patternText);
+        }
+
+        public Pattern NewPatternFromLiterals(string literalText) {
+            var pattern = new Pattern(this);
+            pattern.Root = new PatternElement(this);
+            pattern.Root.Alternatives = new List<List<PatternElement>>();
+            var sequence = new List<PatternElement>();
+            pattern.Root.Alternatives.Add(sequence);
+
+            foreach (char c in literalText) {
+                string ch = "" + c;
+                var elem = new PatternElement(this);
+                elem.Pattern = Patterns.Values.Where(e => e.Literal == ch).First();
+                sequence.Add(elem);
+            }
+
+            return pattern;
         }
 
         public Pattern NewPattern(string name, PatternType patternType, string patternText) {
@@ -299,7 +331,8 @@ namespace TokenDiscovery {
             }
 
             if (elem.Look == Look.Behind) {
-                ConstraintLookBehind(elem);
+                // TODO: Study this
+                //ConstraintLookBehind(elem);
             }
 
         }

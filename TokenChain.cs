@@ -17,6 +17,8 @@ namespace TokenDiscovery {
 
         public List<Token> Tops = new();
 
+        public List<Hole> Holes = new();
+
 
         #endregion
 

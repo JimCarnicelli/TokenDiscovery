@@ -71,6 +71,8 @@ namespace TokenDiscovery {
             // Split on 2 or more newlines
             sourceText = sourceText.Replace("\r\n", "\n").Replace("\r", "\n");
             while (sourceText.Contains("\n\n\n")) sourceText = sourceText.Replace("\n\n\n", "\n\n");
+            while (sourceText.StartsWith("\n")) sourceText = sourceText.Substring(1);
+            while (sourceText.EndsWith("\n")) sourceText = sourceText.Substring(0, sourceText.Length - 1);
             Paragraphs = new List<string>();
             var rawParagraphs = sourceText.Split("\n\n");
             for (int i = 0; i < rawParagraphs.Length; i++) {
@@ -117,11 +119,263 @@ namespace TokenDiscovery {
             Console.WriteLine("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Iteration " + iteration + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
             for (int i = 0; i < Paragraphs.Count; i++) {
                 TrainParagraph(iteration, i);
+                break;
             }
         }
 
         public void TrainParagraph(int iteration, int paragraphIndex) {
             string paragraph = Paragraphs[paragraphIndex];
+
+            // Let's see what we can already parse with existing rules
+            var chain = parser.Parse(paragraph);
+
+            FindHoles(chain);
+            if (!ProposeNewPatterns(chain)) {
+                // TODO: Something
+                //Console.WriteLine("I have no idea what to do here!");
+            }
+
+        }
+
+        public void FindHoles(TokenChain chain) {
+            var runningTokens = new List<Token>();
+            Hole hole = null;
+
+            for (int i = 0; i < chain.Length; i++) {
+                foreach (var token in chain.Heads[i].Values) {
+                    if (token.Pattern.Type < PatternType.Derived) continue;
+                    runningTokens.Add(token);
+                }
+                if (runningTokens.Count == 0) {
+                    if (hole == null) {
+                        hole = new Hole();
+                        hole.StartAt = i;
+                        hole.Length = 0;
+                    }
+                    hole.Length++;
+                    hole.Text += chain.Text[i];
+                } else {
+                    if (hole != null) {
+                        chain.Holes.Add(hole);
+                        hole = null;
+                    }
+                }
+                foreach (var token in chain.Tails[i].Values) {
+                    if (token.Pattern.Type < PatternType.Derived) continue;
+                    runningTokens.Remove(token);
+                }
+            }
+
+            if (hole != null) chain.Holes.Add(hole);
+        }
+
+        public bool ProposeNewPatterns(TokenChain chain) {
+
+            #region Find stretches of repeating patterns
+
+            var repetitions = new Dictionary<string, List<TokenStretch>>();
+
+            // Inch along looking for starts of repetition stretches
+            for (int startAt = 0; startAt < chain.Length; startAt++) {
+                // Consider each of the potential starting point
+                foreach (var firstToken in chain.Heads[startAt].Values) {
+
+                    // Find the set of stretches that we'll add a new stretch to
+                    string key = "" + firstToken.Pattern.Id;
+                    if (!repetitions.TryGetValue(key, out List<TokenStretch> stretches)) {
+                        stretches = new();
+                    }
+                    // Don't even bother looking for a stretch here that we already found earlier
+                    if (stretches.Where(e => startAt < e.StartAt + e.Length).Any()) continue;
+
+                    // We haven't found this stretch previously, so let's create it
+                    var stretch = new TokenStretch() { firstToken };
+                    int nextPos = firstToken.StartAt + firstToken.Length;
+                    while (nextPos < chain.Length) {
+                        var nextToken = chain.Heads[nextPos].Values
+                            .Where(e => e.Pattern.Id == firstToken.Pattern.Id)
+                            .FirstOrDefault();
+                        if (nextToken == null) break;
+                        stretch.Add(nextToken);
+                        nextPos = nextToken.StartAt + nextToken.Length;
+                    }
+
+                    // Did we find more than one repetition?
+                    if (stretch.Count > 1) {
+
+                        string patternText = "<" + firstToken.Pattern.Identity + "! " + firstToken.Pattern.Identity + "+";
+                        var pattern = parser.NewPattern(patternText);
+                        patternText = pattern.Describe(false, true);
+                        if (!parser.Patterns.Values.Where(e => e.Describe(false, true) == patternText).Any()) {
+                            // Let's add it and register this pattern as having one or more stretches of repetitions
+                            stretches.Add(stretch);
+                            repetitions[key] = stretches;
+                        }
+                    }
+
+                }
+            }
+
+            if (repetitions.Count > 0) {
+
+                /*
+                Console.WriteLine("Repetitions:");
+                foreach (var stretches in repetitions.Values
+                    .OrderByDescending(e => e.Count)  // Most stretches first
+                    .ThenByDescending(e => e.Sum(f => f.Length))  // Most characters covered by these stretches first
+                ) {
+                    Console.WriteLine("- " + stretches[0][0].Pattern.Identity + "+ x " + stretches.Count + " (" + stretches.Sum(e => e.Length) + ")");
+                }
+                */
+
+                // Pick the best
+                var best = repetitions.Values
+                    .OrderByDescending(e => e.Sum(f => f.Length))  // Best coverage
+                    .First();
+                // Propose a new pattern
+                var firstPattern = best[0][0].Pattern;
+                string patternText = "<" + firstPattern.Identity + "! " + firstPattern.Identity + "+";
+                Console.WriteLine("Proposing a new pattern: " + patternText);
+                parser.RegisterExperiment(patternText);
+
+                //return true;  // One innovation
+            }
+
+            #endregion
+
+            #region Find stretches of repeating alternations of patterns
+
+            var repetitingAlternations = new Dictionary<string, List<TokenStretch>>();
+
+            // Inch along looking for starts of repetition stretches
+            for (int startAt = 0; startAt < chain.Length; startAt++) {
+                // Consider each of the potential starting point
+                foreach (var firstToken in chain.Heads[startAt].Values) {
+                    int nextPos = firstToken.StartAt + firstToken.Length;
+                    if (nextPos >= chain.Length) continue;
+
+                    // The two alternatives have to be different and not subset/superset
+                    if (chain.Heads[nextPos].ContainsKey(firstToken.Pattern.Id)) continue;
+
+                    foreach (var secondToken in chain.Heads[nextPos].Values) {
+
+                        // Find the set of stretches that we'll add a new stretch to
+                        string key = firstToken.Pattern.Id + "|" + secondToken.Pattern.Id;
+                        if (secondToken.Pattern.Id < firstToken.Pattern.Id) {
+                            key = secondToken.Pattern.Id + "|" + firstToken.Pattern.Id;
+                        }
+                        if (!repetitingAlternations.TryGetValue(key, out List<TokenStretch> stretches)) {
+                            stretches = new();
+                        }
+                        // Don't even bother looking for a stretch here that we already found earlier
+                        if (stretches.Where(e => startAt < e.StartAt + e.Length).Any()) continue;
+
+                        // We haven't found this stretch previously, so let's create it
+                        var stretch = new TokenStretch() { firstToken, secondToken };
+                        nextPos = secondToken.StartAt + firstToken.Length;
+                        if (nextPos >= chain.Length) continue;
+                        while (nextPos < chain.Length) {
+                            var nextToken = chain.Heads[nextPos].Values
+                                .Where(e => e.Pattern.Id == (
+                                    stretch.Count % 2 == 0
+                                        ? firstToken.Pattern.Id  // Even
+                                        : secondToken.Pattern.Id  // Odd
+                                ))
+                                .FirstOrDefault();
+                            if (nextToken == null) break;
+                            stretch.Add(nextToken);
+                            nextPos = nextToken.StartAt + nextToken.Length;
+                        }
+
+                        if (stretch.Count >= 4) {
+
+                            string patternText = null;
+                            if (stretch.Count % 2 == 0) {  // Even
+                                patternText = "(" + firstToken.Pattern.Identity + " " + secondToken.Pattern.Identity + ")+";
+                            } else { // Odd
+                                patternText = firstToken.Pattern.Identity + " (" + secondToken.Pattern.Identity + " " + firstToken.Pattern.Identity + ")*";
+                            }
+
+                            var pattern = parser.NewPattern(patternText);
+                            patternText = pattern.Describe(false, true);
+                            if (!parser.Patterns.Values.Where(e => e.Describe(false, true) == patternText).Any()) {
+                                // Let's add it and register this pattern as having one or more stretches of repetitions
+                                stretches.Add(stretch);
+                                repetitingAlternations[key] = stretches;
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+            if (repetitingAlternations.Count > 0) {
+
+                /*
+                Console.WriteLine("Repetitions:");
+                foreach (var stretches in repetitingAlternations.Values
+                    .OrderByDescending(e => e.Count)  // Most stretches first
+                    .ThenByDescending(e => e.Sum(f => f.Length))  // Most characters covered by these stretches first
+                ) {
+                    Console.WriteLine("- " + stretches[0][0].Pattern.Identity + "+ x " + stretches.Count + " (" + stretches.Sum(e => e.Length) + ")");
+                }
+                */
+
+                // Pick the best
+                var best = repetitingAlternations.Values
+                    .OrderByDescending(e => e.Sum(f => f.Length))  // Best coverage
+                    .First();
+                // Propose a new pattern
+                var firstPattern = best[0][0].Pattern;
+                var secondPattern = best[0][1].Pattern;
+
+                if (best.Where(e => e.Count % 2 == 0).Any()) {  // Even
+                    string patternText = "(" + firstPattern.Identity + " " + secondPattern.Identity + ")+";
+                    Console.WriteLine("Proposing a new pattern: " + patternText);
+                    parser.RegisterExperiment(patternText);
+                }
+                if (best.Where(e => e.Count % 2 == 1).Any()) {  // Odd
+                    string patternText = firstPattern.Identity + "(" + secondPattern.Identity + " " + firstPattern.Identity + ")*";
+                    Console.WriteLine("Proposing a new pattern: " + patternText);
+                    parser.RegisterExperiment(patternText);
+                }
+
+                //return true;  // One innovation
+            }
+
+            #endregion
+
+            #region Call out charcter-for-character exact duplicates
+
+            var duplicates = new Dictionary<string, List<Hole>>();
+            foreach (var hole in chain.Holes) {
+                if (hole.Length == 1) continue;  // Skip single-character holes
+                if (!duplicates.TryGetValue(hole.Text, out List<Hole> list)) {
+                    list = new();
+                    duplicates[hole.Text] = list;
+                }
+                list.Add(hole);
+            }
+            // Keep only those holes that have more than one duplicate
+            foreach (var dup in duplicates.Where(e => e.Value.Count == 1).ToList()) {
+                duplicates.Remove(dup.Key);
+            }
+
+            if (duplicates.Count > 0) {
+                Console.WriteLine("Duplicates:");
+                foreach (var dup in duplicates.Values.OrderByDescending(e => e.Count)) {
+                    Console.WriteLine(dup.Count + " x '" + dup[0].Text + "'");
+                }
+
+                var best = duplicates.Values.OrderByDescending(e => e.Count).First()[0].Text;
+                var pattern = parser.NewPatternFromLiterals(best);
+                parser.Register(pattern);
+            }
+
+            #endregion
+
+            return false;  // No innovations
         }
 
     }

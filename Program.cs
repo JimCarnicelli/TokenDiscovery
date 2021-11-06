@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Linq;
 
 namespace TokenDiscovery {
     class Program {
@@ -21,6 +22,7 @@ namespace TokenDiscovery {
 
             trainer.ImportSourceText(sourceText);
 
+            /*
             trainer.parser.RegisterExperiment("BasicWord",          "<Letter! Letter+");
             trainer.parser.RegisterExperiment("Number",             "<(Digit | '.')! '-'? Digit+ ('.' Digit+)?");
             trainer.parser.RegisterExperiment("Percent",            "Number '%'");
@@ -31,12 +33,14 @@ namespace TokenDiscovery {
             trainer.parser.RegisterExperiment("Phrase",             "<WordSeparator! (Word WordSeparator)* Word");
             trainer.parser.RegisterExperiment("Sentence",           "Phrase '.' Space?");
             trainer.parser.RegisterExperiment("Paragraph",          "<Sentence! Sentence+");
+            */
 
-            trainer.Iterations = 2;
+            trainer.Iterations = 4;
             trainer.Train();
 
-            //parser.SavePatterns(dataPath + "Patterns.txt");
-            //parser.LoadPatterns(dataPath + "Patterns.txt");
+            trainer.parser.Rename("Letters", "<Letter! Letter+");
+            trainer.parser.Rename("Words", "Letters (Space Letters)*");
+            trainer.parser.Rename("Period", "'.' Space");
 
             /*
             Console.WriteLine("#################### Patterns ####################");
@@ -49,21 +53,24 @@ namespace TokenDiscovery {
             Console.ReadLine();
             */
 
-            var paragraph = trainer.Paragraphs[3];
+            Console.WriteLine("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Finally @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+
+            var paragraph = trainer.Paragraphs[0];
             var chain = trainer.parser.Parse(paragraph);
             File.WriteAllText(dataPath + "TokenChain.txt",
                 paragraph + "\n\n" +
                 chain.ToDebugString(PatternType.Derived, false)
             );
-            if (chain.Tops.Count > 0) {
-                File.WriteAllText(dataPath + "TokenTree.json",
-                    "{\n" +
-                    "  \"SourceText\": " + JsonSerialize(paragraph) + ",\n" +
-                    "  \"Root\":\n\n" +
-                    JsonSerialize(chain.Tops[0]) +
-                    "\n\n}\n"
-                );
+            if (chain.Tops.Count == 0) {
+                Console.WriteLine("No patterns match full paragraph\n");
             }
+            File.WriteAllText(dataPath + "TokenTree.json",
+                "{\n" +
+                "  \"SourceText\": " + JsonSerialize(paragraph) + ",\n" +
+                "  \"Root\":\n\n" +
+                (chain.Tops.Count == 0 ? "null" : JsonSerialize(chain.Tops[0])) +
+                "\n\n}\n"
+            );
 
             trainer.parser.SavePatterns(dataPath + "Patterns.txt");
 
